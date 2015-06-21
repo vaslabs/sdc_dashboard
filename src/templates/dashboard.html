@@ -11,7 +11,7 @@
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?">
     </script>
-    
+    <link rel="stylesheet" href="/static/css/progress_bar.css" />
     
     <script type="text/javascript">
 
@@ -38,7 +38,7 @@
     <script type="text/javascript">
       var marker = null;
       function startAnimating(data) {
-      
+          
           var lat = data.gpsEntries[0].latitude;
           var lng = data.gpsEntries[0].longitude;
           var myLatlng = new google.maps.LatLng(lat,lng);
@@ -48,7 +48,7 @@
           }
 
           if (marker == null) {
-            var marker = new google.maps.Marker({
+            marker = new google.maps.Marker({
                 position: myLatlng,
                 map: map,
                 title: 'GPS data'
@@ -57,9 +57,26 @@
           
           }
           
+          var altitudeEntries = data.barometerEntries;
+          altitudeEntries = altitudeEntries.sort(function(entryA, entryB) {
+            return entryA.timestamp - entryB.timestamp;
+          });
+          if (altitudeEntries.length > 0) {
+            var maxAlt = altitudeEntries[0].altitude;
+            var minAlt = altitudeEntries[0].altitude;
+            $.each(altitudeEntries, function(key, alt) {
+              if (alt.altitude > maxAlt) {
+                maxAlt = alt.altitude;
+              }
+              if (alt.altitude < minAlt) {
+                minAlt = alt.altitude;
+              }
+            });
+            animateAltitude(altitudeEntries, 0, maxAlt, minAlt);          
+          }
+
           moveMarker(0, marker, data);
-          
-          
+
               
       }
       
@@ -78,19 +95,49 @@
 
           flightPath.setMap(map);
       }
+
+      var speed = 100;
+
+
+      function animateAltitude(altitudes, i, maxAlt, minAlt) {
+        var altitudeEntry = altitudes[i];
+
+        var timestamp = altitudeEntry.timestamp;
+        while ((i < (altitudes.length - 1)) && altitudes[i+1].timestamp <= altitudes[i].timestamp) {
+          i = i + 1;
+        }
+        if (i < altitudes.length - 1) {
+          var timeDifference = altitudes[i+1].timestamp - timestamp;
+          setTimeout(function () { animateAltitude(altitudes, i + 1, maxAlt, minAlt); }, timeDifference/speed);
+        }
+
+        if (i >= altitudes.length)
+          return;
+        
+        var percentage = (altitudeEntry.altitude - minAlt)/(maxAlt - minAlt);
+        var progress = Math.round(percentage*100);
+        $('#current-altitude').text(altitudeEntry.altitude);
+        $('#progress_bar').data('progress', percentage);
+        $('#progress_bar').height(progress + "%");
+        
+        
+      } 
         
       
-      
+
       function moveMarker(i, marker, data) {
-              var lat = data.gpsEntries[i].latitude;
-              var lng = data.gpsEntries[i].longitude;
-              var position = new google.maps.LatLng(lat, lng);
-              marker.setPosition(position);
-              map.panTo(position);
-              if (i < data.gpsEntries.length - 1) {
-                var timeout = data.gpsEntries[i+1].timestamp - data.gpsEntries[i].timestamp;
-                setTimeout(function () { moveMarker(i+1, marker, data); }, timeout/100);
-            }
+        if (i < data.gpsEntries.length - 1) {
+          var timeout = data.gpsEntries[i+1].timestamp - data.gpsEntries[i].timestamp;
+          setTimeout(function () { moveMarker(i+1, marker, data); }, timeout/speed);
+        }
+        var lat = data.gpsEntries[i].latitude;
+        var lng = data.gpsEntries[i].longitude;
+        var position = new google.maps.LatLng(lat, lng);
+   
+        marker.setPosition(position);
+        map.panTo(position);     
+        
+
       }
 
       function setUpControlPanel() {
@@ -100,6 +147,12 @@
 
         $('#animation-button').click(function() {
           startAnimating(myData);
+        });
+        $('#real-speed-button').click(function() {
+          speed = 1;
+        });
+        $('#fast-forward-button').click(function() {
+          speed = 100;
         });
       }
 
@@ -115,13 +168,35 @@
     <div class="large-2 medium-4 small-4 columns fullHeight">
        <div id="control-panel" class="fullHeight">
           <div class="row">
-            <div id="session-path-button" class="medium12 columns medium round success button">Draw your session path</div>
+            <div id="session-path-button" class="medium-12 columns medium round success button">Draw your session path</div>
           </div>
           <div class="row">
-            <div id="animation-button" class="medium12 columns medium round button">Show animation</div>
+            <div id="animation-button" class="medium-12 columns medium round button">Show animation</div>
           </div>
           <div class="row">
-            <div id="charts-button" class="medium12 columns medium round alert button">View charts</div>
+            <div id="charts-button" class="medium-12 columns medium round alert button">View charts</div>
+          </div>
+          <div class="row">
+            <div id="real-speed-button" class="medium-6 small-12 columns medium round button">Real speed</div>
+
+            <div id="fast-forward-button" class="medium-6 small-12 columns medium round success button">Fast forward</div>
+          </div>
+
+          <div class="row">
+            <div class="medium-8 columns">
+              <div class="callout panel" style="margin-top: 33%">
+                <p id="current-altitude"></p>
+              </div>
+            </div>
+            <div class="medium-4 columns">
+              <div class="skill">
+                  <div class="outer">
+                      <div id="progress_bar" class="inner" data-progress="0%">
+                          <div></div>
+                      </div>        
+                  </div>
+              </div>
+            </div>
           </div>
        </div>
     </div>
