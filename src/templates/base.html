@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html class="no-js" lang="en">
 	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<title>{% block title %}Skydiving Companion{% endblock %}</title>
 		<script type="text/javascript">
@@ -25,6 +27,13 @@
 			    return result;
 			} 
 		</script>
+
+	    <title>Foundation | Welcome</title>
+	    <link rel="stylesheet" href="/static/css/foundation.css" />
+	    <script src="/static/js/vendor/modernizr.js"></script>
+	    {% block scripts%}
+
+	    {% endblock %}
 	</head>
     
     <body>
