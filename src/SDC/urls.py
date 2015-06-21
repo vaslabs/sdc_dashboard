@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     url(r'^dashboard/', include('sdc_dashboard.urls')),
@@ -23,3 +24,5 @@ urlpatterns = [
     url(r'^logout/', 'django.contrib.auth.views.logout', name='logout'),
     url('^', include('django.contrib.auth.urls')),
 ]	
+
+urlpatterns += staticfiles_urlpatterns()

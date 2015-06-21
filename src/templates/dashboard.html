@@ -2,11 +2,11 @@
 {% block head %}
 <title>My dashboard</title>
 {% endblock %}
-{% block content %}
-    <style type="text/css">
-      html, body { height: 100%; margin: 0; padding: 0;}
-      #map-canvas {height: 100%; width: 75%;}
-      #control-panel {height: 100%; width: 25%; background-color: blue;}
+{% block scripts %}
+<style type="text/css">
+      #control-panel {background-color: blue;}
+      #map-canvas, .fullHeight {height: 100%;}
+      .fullWidth {margin: 0; max-width: 100%}
     </style>
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?">
@@ -31,11 +31,12 @@
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
         myData = data;
+        setUpControlPanel();
       }
       google.maps.event.addDomListener(window, 'load', getMyData);
     </script>
     <script type="text/javascript">
-
+      var marker = null;
       function startAnimating(data) {
       
           var lat = data.gpsEntries[0].latitude;
@@ -46,14 +47,16 @@
             center: myLatlng
           }
 
-          var marker = new google.maps.Marker({
-              position: myLatlng,
-              map: map,
-              title: 'GPS data'
-          });
+          if (marker == null) {
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                map: map,
+                title: 'GPS data'
+            });
+            marker.setIcon("http://maps.google.com/mapfiles/ms/icons/red-dot.png");
           
+          }
           
-          marker.setIcon("http://maps.google.com/mapfiles/ms/icons/red-dot.png");
           moveMarker(0, marker, data);
           
           
@@ -90,8 +93,38 @@
             }
       }
 
+      function setUpControlPanel() {
+        $('#session-path-button').click(function() {
+          drawPath(myData);
+        });
+
+        $('#animation-button').click(function() {
+          startAnimating(myData);
+        });
+      }
+
         
     </script>
-<div id="map-canvas"></div>
-<div id="control-panel"></div>
+{% endblock %}
+{% block content %}
+    
+<div class="row fullHeight fullWidth">
+  <div class="large-10 medium-8 small-8 columns fullHeight">
+    <div id="map-canvas"></div>
+  </div>
+    <div class="large-2 medium-4 small-4 columns fullHeight">
+       <div id="control-panel" class="fullHeight">
+          <div class="row">
+            <div id="session-path-button" class="medium12 columns medium round success button">Draw your session path</div>
+          </div>
+          <div class="row">
+            <div id="animation-button" class="medium12 columns medium round button">Show animation</div>
+          </div>
+          <div class="row">
+            <div id="charts-button" class="medium12 columns medium round alert button">View charts</div>
+          </div>
+       </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
