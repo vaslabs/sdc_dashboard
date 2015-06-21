@@ -1,10 +1,33 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>My Project</title>
-    </head>
+	<head>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<title>{% block title %}Skydiving Companion{% endblock %}</title>
+		<script type="text/javascript">
+			function getJSONResponse(jsurl, method_call) {
 
+			    var result = null;
+
+			    $.ajax({
+			        url: jsurl,
+			        cache: true,
+			        type: 'get',
+			        dataType: 'json',
+			        async: method_call != null,
+			        success: function(data) {
+			            if (method_call != null)
+			                method_call(data);
+			            else 
+			                result = data;    
+			        } 
+			    });
+			    
+			    return result;
+			} 
+		</script>
+	</head>
+    
     <body>
-    {% block content %}{% endblock content %}
+    {% block content %}{% endblock %}
     </body>
 </html>
