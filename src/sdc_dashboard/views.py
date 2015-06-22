@@ -1,17 +1,17 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import SkyDiver, SessionData
 import json
 from django.http import HttpResponse
 from SDC import settings
 # Create your views here.
 def index(request):
-    return render(request, 'dashboard.html')
+	return user_dashboard(request)
 
 
 def user_dashboard(request):
 	current_user = request.user
 	if (not current_user.is_authenticated()):
-		return render(request, 'login.html')
+		return redirect('/login')
 	return render(request, 'dashboard.html')
 
 def get_user_data(request):
