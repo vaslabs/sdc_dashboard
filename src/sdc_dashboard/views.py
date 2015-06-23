@@ -25,3 +25,9 @@ def get_user_data(request):
 	data = data_file.readline()
 	data_file.close()
 	return HttpResponse(data, content_type="application/json")
+
+def load_user_graphs(request):
+	current_user = request.user
+	if (not current_user.is_authenticated()):
+		return redirect('/login')
+	return render(request, 'graphs.html')
