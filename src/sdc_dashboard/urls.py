@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^$', views.user_dashboard, name='dashboard'),
  	url(r'^session', views.get_user_data, name='session'),
+ 	url(r'^graphs', views.load_user_graphs, name='graphs')
 ]

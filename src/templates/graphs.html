@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block head %}
+<title>My performance</title>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript"
+          src="https://www.google.com/jsapi?autoload={
+            'modules':[{
+              'name':'visualization',
+              'version':'1',
+              'packages':['corechart']
+            }]
+          }"></script>
+
+    <script type="text/javascript">
+      google.setOnLoadCallback(getMyData);
+      function getMyData() {
+        getJSONResponse('/dashboard/session', initialiseGraphs);
+      }
+      var myData;
+      
+      function initialiseGraphs(json_data) {
+        myData = json_data["barometerEntries"];
+        drawChart();
+      }
+
+      function migrateToDataTable(myData) {
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn('number', 'Time');
+        dataTable.addColumn('number', 'Altitude');
+        var firstTimestamp = myData[0].timestamp;
+        var rows = [];
+        for (var i = 0; i < myData.length; i++) {
+          rows.push([(myData[i].timestamp - firstTimestamp)/1000, myData[i].altitude]);
+        }
+
+        dataTable.addRows(rows);
+
+        return dataTable;
+      }
+
+      function drawChart() {
+          var data = migrateToDataTable(myData);
+          var options = {
+            title: 'Altitude',
+            curveType: 'function',
+            legend: { position: 'bottom' }
+          };
+
+          var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+          chart.draw(data, options);
+        
+      }
+      
+      getMyData();
+      
+    </script>
+{% endblock %}
+
+  {% block content %}
+    <div class="row fullWidth">
+      <div class="large-4 medium-6 small-12 columns">
+        <div id="curve_chart" style="width: 900px; height: 500px"></div>
+      </div>
+    </div>
+  {% endblock %}
