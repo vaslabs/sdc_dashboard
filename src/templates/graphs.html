@@ -17,17 +17,46 @@
       function getMyData() {
         getJSONResponse('/dashboard/session', initialiseGraphs);
       }
-      var myData;
-      
+      var myBarometerData;
+      var myVerticalVelocityDataRows;
+
       function initialiseGraphs(json_data) {
-        myData = json_data["barometerEntries"];
-        drawChart();
+        myBarometerData = json_data["barometerEntries"];
+        myVerticalVelocityDataRows = calculateVerticalVelocity(myBarometerData, 10);
+        drawBarometerChart();
+        drawVerticalVelocityChart();
       }
 
-      function migrateToDataTable(myData) {
+      function calculateVerticalVelocity(data, sample_skip) {
+        var t1, t2, x1, x2;
+        var initialTime = data[0].timestamp;
+        var velocities = [];
+        var dx, dt;
+        for (var i = 1; i < data.length - 1; i+=sample_skip) {
+          t1 = data[i-1].timestamp - initialTime;
+          t2 = data[i].timestamp - initialTime;
+          x1 = data[i-1].altitude;
+          x2 = data[i].altitude;
+          dt = (t2-t1)/1000;
+          dx = (x1-x2);
+          velocities.push([t2/1000, dx/dt]);
+        }
+
+        return velocities;
+
+      }
+
+      function migrateToDataTable(myData, types, values) {
         var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn('number', 'Time');
-        dataTable.addColumn('number', 'Altitude');
+        var type;
+        for (var i = 0; i < values.length; i++) {
+          if (i >= types.length)
+            type = types[types.length - 1];
+          else
+             type = types[i];
+          dataTable.addColumn(type, values[i]);  
+        }
+        
         var firstTimestamp = myData[0].timestamp;
         var rows = [];
         for (var i = 0; i < myData.length; i++) {
@@ -39,18 +68,35 @@
         return dataTable;
       }
 
-      function drawChart() {
-          var data = migrateToDataTable(myData);
+      function drawBarometerChart() {
+          var data = migrateToDataTable(myBarometerData, ['number'], ['Time', 'Altitude']);
           var options = {
             title: 'Altitude',
             curveType: 'function',
             legend: { position: 'bottom' }
           };
 
-          var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+          var chart = new google.visualization.LineChart(document.getElementById('barometer_chart'));
 
           chart.draw(data, options);
         
+      }
+
+      function drawVerticalVelocityChart() {
+          var data = new google.visualization.DataTable();
+          data.addColumn('number', 'Time (s)');
+          data.addColumn('number', 'V(m/s)');
+          data.addRows(myVerticalVelocityDataRows);
+          var options = {
+            title: 'Vertical velocity',
+            curveType: 'function',
+            legend: { position: 'bottom' }
+          };
+
+          var chart = new google.visualization.LineChart(document.getElementById('velocity_chart'));
+
+          chart.draw(data, options);
+          
       }
       
       getMyData();
@@ -60,8 +106,11 @@
 
   {% block content %}
     <div class="row fullWidth">
-      <div class="large-4 medium-6 small-12 columns">
-        <div id="curve_chart" style="width: 900px; height: 500px"></div>
+      <div class="large-6 medium-12 columns">
+        <div id="barometer_chart" style="width: 100%; height: 500px"></div>
+      </div>
+      <div class="large-6 medium-12 columns">
+        <div id="velocity_chart" style="width: 100%; height: 500px"></div>
       </div>
     </div>
   {% endblock %}
