@@ -8,7 +8,9 @@
       src="https://maps.googleapis.com/maps/api/js?">
     </script>
     <link rel="stylesheet" href="/static/css/progress_bar.css" />
-    
+    <script src="/static/js/map_utils.js"></script>
+    <script src="/static/js/graph_utils.js"></script>
+
     <script type="text/javascript">
 
       function getMyData() {
@@ -32,109 +34,7 @@
       google.maps.event.addDomListener(window, 'load', getMyData);
     </script>
     <script type="text/javascript">
-      var marker = null;
-      function startAnimating(data) {
-          
-          var lat = data.gpsEntries[0].latitude;
-          var lng = data.gpsEntries[0].longitude;
-          var myLatlng = new google.maps.LatLng(lat,lng);
-          var mapOptions = {
-            zoom: 16,
-            center: myLatlng
-          }
-
-          if (marker == null) {
-            marker = new google.maps.Marker({
-                position: myLatlng,
-                map: map,
-                title: 'GPS data'
-            });
-            marker.setIcon("http://maps.google.com/mapfiles/ms/icons/red-dot.png");
-          
-          }
-          
-          var altitudeEntries = data.barometerEntries;
-          altitudeEntries = altitudeEntries.sort(function(entryA, entryB) {
-            return entryA.timestamp - entryB.timestamp;
-          });
-          if (altitudeEntries.length > 0) {
-            var maxAlt = altitudeEntries[0].altitude;
-            var minAlt = altitudeEntries[0].altitude;
-            $.each(altitudeEntries, function(key, alt) {
-              if (alt.altitude > maxAlt) {
-                maxAlt = alt.altitude;
-              }
-              if (alt.altitude < minAlt) {
-                minAlt = alt.altitude;
-              }
-            });
-            animateAltitude(altitudeEntries, 0, maxAlt, minAlt);          
-          }
-
-          moveMarker(0, marker, data);
-
-              
-      }
       
-      function drawPath(data) {
-          var flightPlanCoordinates = [];
-          for (var i = 0; i < data.gpsEntries.length; i++) {
-              flightPlanCoordinates.push(new google.maps.LatLng(data.gpsEntries[i].latitude, data.gpsEntries[i].longitude));
-          }
-          var flightPath = new google.maps.Polyline({
-          path: flightPlanCoordinates,
-          geodesic: true,
-          strokeColor: '#FF0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-          });
-
-          flightPath.setMap(map);
-      }
-
-      var speed = 100;
-
-
-      function animateAltitude(altitudes, i, maxAlt, minAlt) {
-        var altitudeEntry = altitudes[i];
-
-        var timestamp = altitudeEntry.timestamp;
-        while ((i < (altitudes.length - 1)) && altitudes[i+1].timestamp <= altitudes[i].timestamp) {
-          i = i + 1;
-        }
-        if (i < altitudes.length - 1) {
-          var timeDifference = altitudes[i+1].timestamp - timestamp;
-          setTimeout(function () { animateAltitude(altitudes, i + 1, maxAlt, minAlt); }, timeDifference/speed);
-        }
-
-        if (i >= altitudes.length)
-          return;
-        
-        var percentage = (altitudeEntry.altitude - minAlt)/(maxAlt - minAlt);
-        var progress = Math.round(percentage*100);
-        $('#current-altitude').text(altitudeEntry.altitude);
-        $('#progress_bar').data('progress', percentage);
-        $('#progress_bar').height(progress + "%");
-        
-        
-      } 
-        
-      
-
-      function moveMarker(i, marker, data) {
-        if (i < data.gpsEntries.length - 1) {
-          var timeout = data.gpsEntries[i+1].timestamp - data.gpsEntries[i].timestamp;
-          setTimeout(function () { moveMarker(i+1, marker, data); }, timeout/speed);
-        }
-        var lat = data.gpsEntries[i].latitude;
-        var lng = data.gpsEntries[i].longitude;
-        var position = new google.maps.LatLng(lat, lng);
-   
-        marker.setPosition(position);
-        map.panTo(position);     
-        
-
-      }
 
       function setUpControlPanel() {
         $('#session-path-button').click(function() {
