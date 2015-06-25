@@ -19,3 +19,27 @@ function calculateVerticalVelocity(data, sample_skip) {
   return velocities;
 
 }
+
+function CartesianLocation(x, y, z) {
+
+  var self = this;
+
+  self.x = x;
+  self.y = y;
+  self.z = z;
+
+  self.distanceFrom = function(CartesianLocation other) {
+    return Math.sqrt(Math.pow(self.x - other.x, 2) + Math.pow(self.y - other.y, 2) +
+           Math.pow(self.z - other.z, 2));
+  };
+
+}
+
+function polarToCartesian(lat, lng, alt) {
+  var x,y,z;
+
+
+
+  return new CartesianLocation(x, y, z);
+}
+
