@@ -13,7 +13,6 @@
           }"></script>
 
     <script type="text/javascript">
-      google.setOnLoadCallback(getMyData);
       function getMyData() {
         getJSONResponse('/dashboard/session', initialiseGraphs);
       }
@@ -22,7 +21,7 @@
 
       function initialiseGraphs(json_data) {
         myBarometerData = json_data["barometerEntries"];
-        myVerticalVelocityDataRows = calculateVerticalVelocity(myBarometerData, 0);
+        myVerticalVelocityDataRows = calculateVerticalVelocity(myBarometerData, 5);
         drawBarometerChart();
         drawVerticalVelocityChart();
       }
@@ -79,9 +78,9 @@
           chart.draw(data, options);
           
       }
-        
+
       getMyData();
-      
+              
     </script>
 {% endblock %}
 
