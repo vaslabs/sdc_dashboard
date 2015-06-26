@@ -4,13 +4,11 @@
 {% endblock %}
 {% block scripts %}
 
-    <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?">
-    </script>
+
     <link rel="stylesheet" href="/static/css/progress_bar.css" />
     <script src="/static/js/map_utils.js"></script>
     <script src="/static/js/graph_utils.js"></script>
-
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>
     <script type="text/javascript">
 
       function getMyData() {

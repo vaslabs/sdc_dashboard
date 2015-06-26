@@ -15,9 +15,9 @@ function startAnimating(data) {
     marker = new google.maps.Marker({
         position: myLatlng,
         map: map,
-        title: 'GPS data'
+        title: 'GPS data',
+        icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, scale: 1}
     });
-    marker.setIcon("http://maps.google.com/mapfiles/ms/icons/red-dot.png");
   
   }
   
@@ -67,16 +67,24 @@ function barometerEvent(eventIndex) {
   $('#current-altitude').text(altitude);
   $('#progress_bar').data('progress', percentage);
   $('#progress_bar').height(progress + "%");
+  marker.getIcon().scale = Math.round(((altitude / 100)/5 + 1));
+  marker.setIcon(marker.getIcon());
   nextEvent(eventIndex);
 }
 
+var previousPosition = null;
 function gpsEvent(eventIndex) {
   var lat = serialisedEvents[eventIndex].latitude;
   var lng = serialisedEvents[eventIndex].longitude;
   var position = new google.maps.LatLng(lat, lng);
-
+  if (previousPosition != null) {
+    var heading = google.maps.geometry.spherical.computeHeading(previousPosition, position);
+    marker.getIcon().rotation = heading;
+    marker.setIcon(marker.getIcon());
+  }
+  previousPosition = position;
   marker.setPosition(position);
-  map.panTo(position);     
+  map.panTo(position);
   nextEvent(eventIndex);
 }
 
