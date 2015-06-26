@@ -38,7 +38,7 @@ function startAnimating(data) {
     });
     
   }
-  animateEvents(gpsEntries, altitudeEntries);
+  prepareEvents(gpsEntries, altitudeEntries);
  
 }
 
@@ -59,42 +59,52 @@ function drawPath(data) {
 }
 
 var speed = 100;
-
-function barometerEvent(altitude) {
+var serialisedEvents;
+function barometerEvent(eventIndex) {
+  var altitude = serialisedEvents[eventIndex].altitude;
   var percentage = (altitude - minAlt)/(maxAlt - minAlt);
   var progress = Math.round(percentage*100);
   $('#current-altitude').text(altitude);
   $('#progress_bar').data('progress', percentage);
   $('#progress_bar').height(progress + "%");
+  nextEvent(eventIndex);
 }
 
-function gpsEvent(longitude, latitude) {
-  var lat = data.gpsEntries[i].latitude;
-  var lng = data.gpsEntries[i].longitude;
+function gpsEvent(eventIndex) {
+  var lat = serialisedEvents[eventIndex].latitude;
+  var lng = serialisedEvents[eventIndex].longitude;
   var position = new google.maps.LatLng(lat, lng);
 
   marker.setPosition(position);
   map.panTo(position);     
-
+  nextEvent(eventIndex);
 }
 
+function nextEvent(eventIndex) {
+  var previousTimestamp = serialisedEvents[eventIndex].timestamp;
+  eventIndex += 1;
+  if (eventIndex >= serialisedEvents.length)
+      return;
+  var nextTimestamp = serialisedEvents[eventIndex].timestamp;
+  var timeDiff = (nextTimestamp - previousTimestamp)/speed;
+  if (serialisedEvents[eventIndex].event_type == "barometer") {
+      setTimeout(function() {barometerEvent(eventIndex);}, timeDiff);
+  } else if (serialisedEvents[eventIndex].event_type == "gps") {
+      setTimeout(function() {gpsEvent(eventIndex);}, timeDiff);
+  }
+}//nextEvent
 
-
-function animateEvents(gpsEntries, altitudeEntries) {
+function prepareEvents(gpsEntries, altitudeEntries) {
   
-  var debugGPS = function (lat, lng) {
-    console.log("gps : " + lat + "," + lng);
-  }
-  var debugAlt = function (alt) {
-    console.log("alt: " + alt);
-  }
-
-  var serialisedEvents = serialiseEvents(gpsEntries, altitudeEntries, gpsEvent, barometerEvent);
+  
+  serialisedEvents = serialiseEvents(gpsEntries, altitudeEntries);
   var previousTimestamp = serialisedEvents[0].timestamp;
-  for (var i = 0; i < serialisedEvents.length; i++) {
-    var delay = (serialisedEvents[i].timestamp - previousTimestamp)/speed;
-    previousTimestamp = serialisedEvents[i];
-    setTimeout(serialisedEvents.eventCall(), delay);
-  }//for
+  
+  
+  if (serialisedEvents[0].event_type == "barometer") {
+    barometerEvent(0);
+  } else if (serialisedEvents[0].event_type == "gps") {
+    gpsEvent(0);
+  }
 
 }

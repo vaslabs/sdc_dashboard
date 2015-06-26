@@ -2,30 +2,27 @@ function serialiseEvents(gpsEntries, barometerEntries, gpsCallback, barometerCal
     
     var event_array = [];
     var barometerIndex = 0;
-    for (var i = 0; i < gpsEntries.length; i++) {
-        gpsNextTimestamp = gpsEntries[i];
-        barometerNextTimestamp = barometerEntries[barometerIndex];
-        while (gpsNextTimestamp >= barometerNextTimestamp) {
-            var eventFunction = function() {
-                barometerCallback(barometerEntries[barometerIndex].altitude);
-            };
-            event_array.push({timestamp: barometerNextTimestamp, eventCall: eventFunction});
-            barometerIndex += 1;
-            barometerNextTimestamp = barometerEntries[barometerIndex].timestamp;
-        }//while
-        var eventFunction = function() {
-            gpsCallback(gpsEntries[i].latitude, gpsEntries[i].longitude);
-        };
+    var gpsIndex = 0;
+    while (barometerIndex < barometerEntries.length && gpsIndex < gpsEntries.length) {
+        if (gpsEntries[gpsIndex].timestamp <= barometerEntries[barometerIndex].timestamp) {
+            event_array.push({timestamp: gpsEntries[gpsIndex].timestamp, event_type: "gps",  latitude: gpsEntries[gpsIndex].latitude, 
+                                                                               longitude: gpsEntries[gpsIndex].longitude});
+            gpsIndex++;
+        } else {
+            event_array.push({timestamp: barometerEntries[barometerIndex].timestamp, event_type: "barometer", 
+                              altitude: barometerEntries[barometerIndex].altitude});
+            barometerIndex++;
 
-        event_array.push({timestamp: gpsNextTimestamp, eventCall: eventFunction});
-    }//for
-
+        }
+    }
     for (var i = barometerIndex; i < barometerEntries.length; i++) {
-        var eventFunction = function() {
-            barometerCallback(barometerEntries[i].altitude);
-        };
-        event_array.push({timestamp: barometerNextTimestamp, eventCall: eventFunction});
+
+        event_array.push({timestamp: barometerEntries[i].timestamp, event_type: "barometer", altitude: barometerEntries[i].altitude});
     }
 
+    for (var i = gpsIndex; i < gpsEntries.length; i++) {
+        event_array.push({timestamp: gpsEntries[i].timestamp, event_type: "gps",  latitude: gpsEntries[i].latitude, 
+                                                                               longitude: gpsEntries[i].longitude});    
+    }
     return event_array;
 }
