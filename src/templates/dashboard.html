@@ -6,6 +6,8 @@
 
 
     <link rel="stylesheet" href="/static/css/progress_bar.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script src="/static/js/map_utils.js"></script>
     <script src="/static/js/graph_utils.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>
@@ -33,6 +35,12 @@
     </script>
     <script type="text/javascript">
       
+      function showLink(link_data) {
+        var linkId = link_data.link;
+        $('p#link-share').text("http://" + location.host + "/dashboard/shared_session/l/" + linkId);
+        $('#dialog').css("display", "block");
+        $('#dialog').dialog();
+      }
 
       function setUpControlPanel() {
         $('#session-path-button').click(function() {
@@ -48,7 +56,13 @@
         $('#fast-forward-button').click(function() {
           speed = 100;
         });
+
+        $('#share-session-button').click(function() {
+          getJSONResponse('/dashboard/share', showLink);
+        });
       }
+
+
 
         
     </script>
@@ -70,38 +84,31 @@
             </div>
           </div>
           <div class="row">
-            <div id="session-path-button" class="medium-12 columns medium round success button">Draw your session path</div>
+            <div id="session-path-button" class="medium-12 columns medium round button"><i class="step fi-branch size-24"></i>Path</div>
           </div>
           <div class="row">
-            <div id="animation-button" class="medium-12 columns medium round button">Show animation</div>
+            <div id="animation-button" class="medium-12 columns medium round button"><i class="step fi-play size-24"></i>Movie</div>
           </div>
           <div class="row">
-            <a href="/dashboard/graphs" class="medium-12 columns medium round alert button">View charts</a>
+            <a href="/dashboard/graphs" class="medium-12 columns medium round button"><i class="step fi-graph-trend size-24"></i>Stats</a>
           </div>
           <div class="row">
-            <div id="real-speed-button" class="medium-6 small-12 columns medium round button">Real speed</div>
+            <div id="real-speed-button" class="medium-6 small-12 columns medium round button"><i class="fi-play size-16"></i></div>
 
-            <div id="fast-forward-button" class="medium-6 small-12 columns medium round success button">Fast forward</div>
+            <div id="fast-forward-button" class="medium-6 small-12 columns medium round button"><i class="fi-next size-16"></i></div>
           </div>
 
           <div class="row">
-            <div class="medium-8 columns">
-              <div class="callout panel" style="margin-top: 33%">
-                <p id="current-altitude"></p>
-              </div>
-            </div>
-            <div class="medium-4 columns">
-              <div class="skill">
-                  <div class="outer">
-                      <div id="progress_bar" class="inner" data-progress="0%">
-                          <div></div>
-                      </div>        
-                  </div>
-              </div>
+            <div class="small-12 columns">
+              <div id="share-session-button" class="medium-6 small-12 columns medium round button"><i class="step fi-share size-16"></i></div>
             </div>
           </div>
        </div>
     </div>
   </div>
+</div>
+
+<div id="dialog" title="Share your session" style="display: none">
+  <p id="link-share" style="color: black"></p>
 </div>
 {% endblock content %}
