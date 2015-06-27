@@ -21,6 +21,7 @@
 
       function initialiseGraphs(json_data) {
         myBarometerData = json_data["barometerEntries"];
+        myBarometerData = averageBarometerValues(myBarometerData, 3);
         myVerticalVelocityDataRows = calculateVerticalVelocity(myBarometerData, 50);
         drawBarometerChart();
         drawVerticalVelocityChart();

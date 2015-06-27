@@ -194,3 +194,22 @@ function findMaximumSpeed(velocityEntries) {
   }
   return maxSpeed;
 }
+
+
+function averageBarometerValues(barometerValues, density) {
+  var avgBarometerEntries = []; 
+  var timestampAvg = 0;
+  var altitudeAvg = 0;
+  for (var i = 0; i < barometerValues.length - density; i+=density) {
+    for (var j = 0; j < density; j++) {
+      timestampAvg += barometerValues[i+j].timestamp/density;
+      altitudeAvg += barometerValues[i+j].altitude/density;
+    }
+    avgBarometerEntries.push({timestamp:timestampAvg, altitude: altitudeAvg});
+    timestampAvg = 0;
+    altitudeAvg = 0;
+  }
+
+  return avgBarometerEntries;
+
+}
