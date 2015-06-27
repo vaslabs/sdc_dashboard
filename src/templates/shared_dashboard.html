@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block head %}
+<title>My dashboard</title>
+{% endblock %}
+{% block scripts %}
+
+
+    <link rel="stylesheet" href="/static/css/progress_bar.css" />
+    <script src="/static/js/map_utils.js"></script>
+    <script src="/static/js/graph_utils.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>
+    <script type="text/javascript">
+
+      function getMyData() {
+        var urlParts = document.URL.split("/")
+        var linkId = urlParts[urlParts.length - 1];
+        getJSONResponse('/dashboard/shared_session/' + linkId, initialize);
+      }
+
+      var map;
+      var myData;
+      function initialize(data) {
+        var latitude = data.gpsEntries[0].latitude;
+        var longitude = data.gpsEntries[0].longitude;
+        var mapOptions = {
+          center: { lat: latitude, lng: longitude},
+          zoom: 16
+        };
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+        myData = data;
+        setUpControlPanel();
+      }
+      google.maps.event.addDomListener(window, 'load', getMyData);
+    </script>
+    <script type="text/javascript">
+      
+
+      function setUpControlPanel() {
+          drawPath(myData);
+          startAnimating(myData);
+      }
+
+        
+    </script>
+{% endblock %}
+{% block content %}
+    
+<div class="row fullHeight fullWidth">
+  <div class="small-12 columns fullHeight">
+    <div id="map-canvas"></div>
+  </div>
+</div>
+{% endblock content %}

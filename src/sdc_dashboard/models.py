@@ -14,3 +14,11 @@ class SessionData(models.Model):
     
     def __str__(self):
         return self.location
+
+class ShareLink(models.Model):
+    shareLink = models.CharField(max_length=16, unique=True)
+    userShared = models.ForeignKey(SkyDiver)
+    expires = models.DateTimeField("date expires")
+
+    def __str__(self):
+        return "/shared_session/" + self.shareLink
