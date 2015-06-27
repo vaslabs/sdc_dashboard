@@ -60,6 +60,16 @@ function drawPath(data) {
 
 var speed = 100;
 var serialisedEvents;
+var takeOffShown = false;
+var takeOffImg = '/static/img/take-off.png';
+var freeFallShown = false;
+var freeFallImg = '/static/img/freefall.png';
+
+var canopyShown = false;
+var canopyImg = '/static/img/canopy.png';
+var walkImg = "/static/img/walk.png";
+
+var landedShown = false;
 function barometerEvent(eventIndex) {
   var altitude = serialisedEvents[eventIndex].altitude;
   var percentage = (altitude - minAlt)/(maxAlt - minAlt);
@@ -69,7 +79,22 @@ function barometerEvent(eventIndex) {
   $('#progress_bar').height(progress + "%");
   marker.getIcon().scale = Math.round(((altitude / 100)/5 + 1));
   marker.setIcon(marker.getIcon());
-  nextEvent(eventIndex);
+  if (skyDivingEvents.takeoff.timestamp < serialisedEvents[eventIndex].timestamp && !takeOffShown) {
+    $('#status-image').attr('src', takeOffImg);
+    takeOffShown = true;
+  } else if (skyDivingEvents.freefall.timestamp < serialisedEvents[eventIndex].timestamp && !freeFallShown) {
+    $('#status-image').attr('src', freeFallImg);
+    freeFallShown = true;
+  } else if (skyDivingEvents.canopy.timestamp < serialisedEvents[eventIndex].timestamp && !canopyShown) {
+    $('#status-image').attr('src', canopyImg);
+    canopyShown = true;
+  } else if (skyDivingEvents.landed.timestamp < serialisedEvents[eventIndex].timestamp && !landedShown) {
+    $('#status-image').attr('src', walkImg);
+    landedShown = true;
+  }
+    
+  if (serialisedEvents)
+    nextEvent(eventIndex);
 }
 
 var previousPosition = null;
@@ -102,17 +127,20 @@ function nextEvent(eventIndex) {
   }
 }//nextEvent
 
+var skyDivingEvents = null;
 function prepareEvents(gpsEntries, altitudeEntries) {
   
-  
+  $('#status-image').attr("src", walkImg);
   serialisedEvents = serialiseEvents(gpsEntries, altitudeEntries);
   var previousTimestamp = serialisedEvents[0].timestamp;
-  
+
+  skyDivingEvents = identifyFlyingEvents(altitudeEntries);
   
   if (serialisedEvents[0].event_type == "barometer") {
     barometerEvent(0);
   } else if (serialisedEvents[0].event_type == "gps") {
     gpsEvent(0);
   }
+
 
 }

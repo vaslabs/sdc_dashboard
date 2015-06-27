@@ -1,0 +1,20 @@
+#status-image {
+    max-width: 64px;
+    max-height: 64px;
+    height: 100%;
+    width: 100%;
+
+}
+
+#control-panel h2, #control-panel h3, #control-panel p {
+    color: white;
+}
+
+
+.centeredImage
+{
+    text-align:center;
+    margin-top:0px;
+    margin-bottom:0px;
+    padding:0px;
+}
