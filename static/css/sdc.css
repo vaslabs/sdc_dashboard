@@ -58,3 +58,7 @@ div.logbook-entry {
 .leftalign {
     float: left !important;
 }
+
+.button.semi-round {
+    border-radius: 12px;
+}
