@@ -37,3 +37,16 @@ i.fi-branch:before {
 i.fi-branch {
     font-style: normal;
 }
+
+.logbook-details p {
+    font-weight: bold;
+}
+
+
+.logbook-details p span {
+    font-weight: normal;
+}
+
+.datetime {
+    font-style: italic;
+}

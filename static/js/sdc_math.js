@@ -238,7 +238,8 @@ function calculate_metrics(session_data) {
     }
   }
 
-  return {'freefalltime':totalFreeFallTime, 'exitAltitude':exitAltitude, 'deploymentAltitude':deploymentAltitude, 'maxVelocity':max_speed.velocity};
+  return {'freefalltime':totalFreeFallTime.toFixed(2), 'exitAltitude':exitAltitude.toFixed(2), 
+          'deploymentAltitude':deploymentAltitude.toFixed(2), 'maxVelocity':max_speed.velocity.toFixed(2)};
 
 }
 
