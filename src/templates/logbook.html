@@ -8,6 +8,7 @@
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script src="/static/js/map_utils.js"></script>
     <script src="/static/js/graph_utils.js"></script>
+    <script src="/static/js/geo.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>
     <script type="text/html" id="session-template">
       <div class="row">
@@ -38,6 +39,9 @@
         <div class="small-12 columns">
           <p>Max velocity: <span data-bind="{text: metrics.maxVelocity}"></span></p>
         </div>
+        <div class="small-12 columns">
+          <p>Location: <span data-bind="attr: {id:'session-location-'+number}"></span></p>
+        </div>
       </div>
     </script>
     <script type="text/javascript">
@@ -55,11 +59,12 @@
     </script>
     <script type="text/javascript">
 
-      function SkydivingSession(date, number, session_calculated_data) {
+      function SkydivingSession(date, number, session_calculated_data, location) {
         var self = this;
         self.date = date;
         self.number = number;
         self.metrics = session_calculated_data;
+        self.location = location;
       }
 
       function initialize(session_data) {
@@ -68,7 +73,8 @@
           var session = session_data[i];
           var date = Date(session.gpsEntries[0].timestamp)
           var metrics = calculate_metrics(session);
-          sessions.push(new SkydivingSession(date, i, metrics));
+          var location = {lat:session.gpsEntries[0].latitude, lng: session.gpsEntries[0].longitude};
+          sessions.push(new SkydivingSession(date, i, metrics, location));
         }
 
         prepareUI(sessions);
@@ -76,6 +82,9 @@
 
       function prepareUI(sessions) {
          ko.applyBindings({"sessions":sessions});
+         for (var i = 0; i < sessions.length; i++) {
+          getLocationDetails(sessions[i].location.lat, sessions[i].location.lng, $('#session-location-'+i));
+         }
       }
         
     </script>

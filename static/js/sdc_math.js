@@ -225,7 +225,7 @@ function calculate_metrics(session_data) {
       return {'freefalltime':"N/A", 'exitAltitude':"N/A", 'deploymentAltitude':"N/A", 'maxVelocity':"N/A"};
 
   }
-  var velocities = calculateVerticalVelocityEntries(avgBarometerEntries, 0);
+  var velocities = calculateVerticalVelocityEntries(avgBarometerEntries, 50);
   var max_speed = findMaximumSpeed(velocities); //logbooked
   var events = identifyFlyingEvents(avgBarometerEntries);  
   var totalFreeFallTime = (events.canopy.timestamp - events.freefall.timestamp)/1000; //logbooked
