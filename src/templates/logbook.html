@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block head %}
+<title>My dashboard</title>
+{% endblock %}
+{% block scripts %}
+    <link rel="stylesheet" href="/static/css/progress_bar.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="/static/js/map_utils.js"></script>
+    <script src="/static/js/graph_utils.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>
+    <script type="text/html" id="session-template">
+      <div class="row">
+        <div class="small-12 columns">
+          <h3 class="session_id"><a data-bind="{attr: {href: '#' + number}, text: '#' + number}"></a></h3>
+          <p data-bind="text: date"></p>
+        </div>
+      </div>
+      <hr />
+    </script>
+    <script type="text/html" id="session-details-template">
+      <div class="row" data-bind="attr: {id: number}" >
+        <div class="small-12 columns">
+          <h3 class="session_id"><a data-bind="{attr: {href: '/dashboard/logbook/' + number}, text: '#' + number}"></a></h3>
+          <p data-bind="text: date"></p>
+        </div>
+      </div>
+      <div class="row" >
+        <div class="small-12 columns">
+          <p>Free fall time: <span data-bind="{text: metrics.freefalltime}"></span></p>
+        </div>
+        <div class="small-12 columns">
+          <p>Exit altitude: <span data-bind="{text: metrics.exitAltitude}"></span></p>
+        </div>
+        <div class="small-12 columns">
+          <p>Deployment altitude: <span data-bind="{text: metrics.deploymentAltitude}"></span></p>
+        </div>
+        <div class="small-12 columns">
+          <p>Max velocity: <span data-bind="{text: metrics.maxVelocity}"></span></p>
+        </div>
+      </div>
+    </script>
+    <script type="text/javascript">
+
+      function getMyData() {
+        getJSONResponse('/dashboard/sessions', initialize);
+      }
+
+      var map;
+      var myData;
+      function initialize(data) {
+        
+      }
+      google.maps.event.addDomListener(window, 'load', getMyData);
+    </script>
+    <script type="text/javascript">
+
+      function SkydivingSession(date, number, session_calculated_data) {
+        var self = this;
+        self.date = date;
+        self.number = number;
+        self.metrics = session_calculated_data;
+      }
+
+      function initialize(session_data) {
+        var sessions = [];
+        for (var i = session_data.length - 1; i >= 0; i--) {
+          var session = session_data[i];
+          var date = Date(session.gpsEntries[0].timestamp)
+          var metrics = calculate_metrics(session);
+          sessions.push(new SkydivingSession(date, i, metrics));
+        }
+
+        prepareUI(sessions);
+      }
+
+      function prepareUI(sessions) {
+         ko.applyBindings({"sessions":sessions});
+      }
+        
+    </script>
+{% endblock %}
+{% block content %}
+    
+<div class="row fullHeight fullWidth">
+  <div class="medium-8 small-8 columns fullHeight">
+    <div id="session-logbook">
+      <div class="row">
+        <div class="large-6 medium-8 small-12 columns">
+          <div data-bind="template: { name: 'session-details-template', foreach: sessions }">
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="medium-4 small-4 columns fullHeight">
+       
+       <div id="session-list" class="fullHeight">
+          <div class="small-12 columns">
+            <h3>My past sessions</h3>
+          </div>
+          <hr />
+          <div data-bind="template: { name: 'session-template', foreach: sessions }">
+
+          </div> 
+       </div>
+    </div>
+ </div>
+
+<div id="dialog" title="Share your session" style="display: none">
+  <p id="link-share" style="color: black"></p>
+</div>
+{% endblock content %}
