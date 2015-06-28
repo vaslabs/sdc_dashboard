@@ -23,10 +23,10 @@
       <div class="row" data-bind="attr: {id: number}" >
         <div class="small-12 columns">
           <h3 class="session_id"><a data-bind="{attr: {href: '/dashboard/logbook/' + number}, text: '#' + number}"></a></h3>
-          <p data-bind="text: date"></p>
+          <p class="datetime" data-bind="text: date"></p>
         </div>
       </div>
-      <div class="row" >
+      <div class="logbook-details row" >
         <div class="small-12 columns">
           <p>Free fall time: <span data-bind="{text: metrics.freefalltime}"></span></p>
         </div>
