@@ -143,7 +143,7 @@ function identifyFlyingEvents(barometerEntries) {
   var slope;
 
   var current_altitude = barometerEntries[0].altitude;
-  var dramaticAltitudeIncreasePoint = fastWalkForUp(50, 0, current_altitude);
+  var dramaticAltitudeIncreasePoint = fastWalkForUp(20, 0, current_altitude);
 
   var takeOffTimestamp = barometerEntries[dramaticAltitudeIncreasePoint].timestamp; //go half a minute back
 

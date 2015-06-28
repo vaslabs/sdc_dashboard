@@ -24,14 +24,15 @@ def get_user_data(request, sessionNo=-1):
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 	
 	sessionData = SessionData.objects.filter(skyDiver=skydiver)
-	sessionNo = int(sessionNo)
+	try:
+		sessionNo = int(sessionNo)
+	except:
+		sessionNo = len(sessionData) - 1
 	if (sessionNo < 0) or (sessionNo >= len(sessionData)):
-		print "sessionNo:", sessionNo
 		sessionNo = len(sessionData) - 1
 	data_file = open(settings.DATA_DIR + "/" + sessionData[sessionNo].location)
 	data = data_file.readline()
 	data_file.close()
-	print sessionNo
 	return HttpResponse(data, content_type="application/json")
 
 def load_user_graphs(request):
