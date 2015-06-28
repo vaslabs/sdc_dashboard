@@ -43,14 +43,99 @@ function startAnimating(data) {
 }
 
 function drawPath(data) {
+  var gpsEntries = data.gpsEntries;
+  var altitudeEntries = data.barometerEntries;
+  var skyDivingEvents = null;
+  if (altitudeEntries.length > 0)
+    skyDivingEvents = identifyFlyingEvents(altitudeEntries);
+
+  //walking
   var flightPlanCoordinates = [];
-  for (var i = 0; i < data.gpsEntries.length; i++) {
-      flightPlanCoordinates.push(new google.maps.LatLng(data.gpsEntries[i].latitude, data.gpsEntries[i].longitude));
+  var wasLeftAt = 0;
+  for (var i = 0; i < gpsEntries.length; i++) {
+      if (skyDivingEvents != null && skyDivingEvents.takeoff.timestamp < gpsEntries[i].timestamp) {
+        wasLeftAt = i;
+        break;
+      }
+      flightPlanCoordinates.push(new google.maps.LatLng(gpsEntries[i].latitude, gpsEntries[i].longitude));
   }
   var flightPath = new google.maps.Polyline({
   path: flightPlanCoordinates,
   geodesic: true,
+  strokeColor: '#000000',
+  strokeOpacity: 1.0,
+  strokeWeight: 2
+  });
+
+  flightPath.setMap(map);
+
+  //airplane
+  flightPlanCoordinates = [];
+  for (var i = wasLeftAt; i < gpsEntries.length; i++) {
+      if (skyDivingEvents.freefall.timestamp < gpsEntries[i].timestamp) {
+        wasLeftAt = i;
+        break;
+      }
+      flightPlanCoordinates.push(new google.maps.LatLng(gpsEntries[i].latitude, gpsEntries[i].longitude));
+  }
+  flightPath = new google.maps.Polyline({
+  path: flightPlanCoordinates,
+  geodesic: true,
+  strokeColor: '#0000FF',
+  strokeOpacity: 1.0,
+  strokeWeight: 2
+  });
+
+  flightPath.setMap(map);
+
+  //Free fall
+  flightPlanCoordinates = [];
+  for (var i = wasLeftAt; i < gpsEntries.length; i++) {
+      if (skyDivingEvents.canopy.timestamp < gpsEntries[i].timestamp) {
+        wasLeftAt = i;
+        break;
+      }
+      flightPlanCoordinates.push(new google.maps.LatLng(gpsEntries[i].latitude, gpsEntries[i].longitude));
+  }
+  flightPath = new google.maps.Polyline({
+  path: flightPlanCoordinates,
+  geodesic: true,
   strokeColor: '#FF0000',
+  strokeOpacity: 1.0,
+  strokeWeight: 2
+  });
+
+  flightPath.setMap(map);
+
+  //Canopy
+  flightPlanCoordinates = [];
+  for (var i = wasLeftAt; i < gpsEntries.length; i++) {
+      if (skyDivingEvents.landed.timestamp < gpsEntries[i].timestamp) {
+        wasLeftAt = i;
+        break;
+      }
+      flightPlanCoordinates.push(new google.maps.LatLng(gpsEntries[i].latitude, gpsEntries[i].longitude));
+  }
+  flightPath = new google.maps.Polyline({
+  path: flightPlanCoordinates,
+  geodesic: true,
+  strokeColor: '#00FF00',
+  strokeOpacity: 1.0,
+  strokeWeight: 2
+  });
+
+  flightPath.setMap(map);
+
+
+  //walking
+  flightPlanCoordinates = [];
+  for (var i = wasLeftAt; i < gpsEntries.length; i++) {
+      flightPlanCoordinates.push(new google.maps.LatLng(gpsEntries[i].latitude, gpsEntries[i].longitude));
+  }
+  flightPath = new google.maps.Polyline({
+  path: flightPlanCoordinates,
+  geodesic: true,
+  strokeColor: '#000000',
   strokeOpacity: 1.0,
   strokeWeight: 2
   });
@@ -129,7 +214,7 @@ function nextEvent(eventIndex) {
 
 var skyDivingEvents = null;
 function prepareEvents(gpsEntries, altitudeEntries) {
-  
+
   $('#status-image').attr("src", walkImg);
   serialisedEvents = serialiseEvents(gpsEntries, altitudeEntries);
   var previousTimestamp = serialisedEvents[0].timestamp;

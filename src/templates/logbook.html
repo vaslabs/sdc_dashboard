@@ -71,7 +71,7 @@
         var sessions = [];
         for (var i = session_data.length - 1; i >= 0; i--) {
           var session = session_data[i];
-          var date = Date(session.gpsEntries[0].timestamp)
+          var date = new Date(session.gpsEntries[0].timestamp)
           var metrics = calculate_metrics(session);
           var location = {lat:session.gpsEntries[0].latitude, lng: session.gpsEntries[0].longitude};
           sessions.push(new SkydivingSession(date, i, metrics, location));
