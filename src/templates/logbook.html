@@ -11,37 +11,37 @@
     <script src="/static/js/geo.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>
     <script type="text/html" id="session-template">
-      <div class="row">
-        <div class="small-12 columns">
-          <div class="panel">
-            <h3 class="session_id"><a data-bind="{attr: {href: '#' + number}, text: '#' + number}"></a></h3>
-            <p data-bind="text: date"></p>
-          </div>
+      <div class="small-12 columns">
+        <div class="panel">
+          <h3 class="session_id"><a data-bind="{attr: {href: '#' + number}, text: '#' + number}"></a></h3>
+          <p data-bind="text: date"></p>
         </div>
       </div>
     </script>
     <script type="text/html" id="session-details-template">
-      <div class="row" data-bind="attr: {id: number}" >
-        <div class="small-12 columns">
-          <h3 class="session_id"><a data-bind="{attr: {href: '/dashboard/logbook/' + number}, text: '#' + number}"></a></h3>
-          <p class="datetime" data-bind="text: date"></p>
+      <div class="large-6 medium-12 columns logbook-entry" data-bind="css: {leftalign: number%2==0}">
+        <div class="large-12 columns" data-bind="attr: {id: number}" >
+          <div class="small-12 columns">
+            <h3 class="session_id"><a data-bind="{attr: {href: '/dashboard/logbook/' + number}, text: '#' + number}"></a></h3>
+            <p class="datetime" data-bind="text: date"></p>
+          </div>
         </div>
-      </div>
-      <div class="logbook-details row" >
-        <div class="small-12 columns">
-          <p>Free fall time: <span data-bind="{text: metrics.freefalltime}"></span></p>
-        </div>
-        <div class="small-12 columns">
-          <p>Exit altitude: <span data-bind="{text: metrics.exitAltitude}"></span></p>
-        </div>
-        <div class="small-12 columns">
-          <p>Deployment altitude: <span data-bind="{text: metrics.deploymentAltitude}"></span></p>
-        </div>
-        <div class="small-12 columns">
-          <p>Max velocity: <span data-bind="{text: metrics.maxVelocity}"></span></p>
-        </div>
-        <div class="small-12 columns">
-          <p>Location: <span data-bind="attr: {id:'session-location-'+number}"></span></p>
+        <div class="logbook-details large-12 columns" >
+          <div class="small-12 columns">
+            <p>Free fall time: <span data-bind="{text: metrics.freefalltime}"></span></p>
+          </div>
+          <div class="small-12 columns">
+            <p>Exit altitude: <span data-bind="{text: metrics.exitAltitude}"></span></p>
+          </div>
+          <div class="small-12 columns">
+            <p>Deployment altitude: <span data-bind="{text: metrics.deploymentAltitude}"></span></p>
+          </div>
+          <div class="small-12 columns">
+            <p>Max velocity: <span data-bind="{text: metrics.maxVelocity}"></span></p>
+          </div>
+          <div class="small-12 columns">
+            <p>Location: <span data-bind="attr: {id:'session-location-'+number}"></span></p>
+          </div>
         </div>
       </div>
     </script>
@@ -96,10 +96,7 @@
   <div class="medium-8 small-8 columns fullHeight">
     <div id="session-logbook">
       <div class="row">
-        <div class="large-6 medium-8 small-12 columns">
-          <div data-bind="template: { name: 'session-details-template', foreach: sessions }">
-
-          </div>
+        <div data-bind="template: { name: 'session-details-template', foreach: sessions }">
         </div>
       </div>
     </div>
@@ -111,7 +108,7 @@
             <h3>My past sessions</h3>
           </div>
           <hr />
-          <div data-bind="template: { name: 'session-template', foreach: sessions }">
+          <div class="row" data-bind="template: { name: 'session-template', foreach: sessions }">
 
           </div> 
        </div>

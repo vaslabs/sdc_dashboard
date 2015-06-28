@@ -50,3 +50,11 @@ i.fi-branch {
 .datetime {
     font-style: italic;
 }
+
+div.logbook-entry {
+    background: url('/static/img/pad.png');
+}
+
+.leftalign {
+    float: left !important;
+}
