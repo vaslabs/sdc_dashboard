@@ -59,6 +59,7 @@
 		  <section class="top-bar-section">
 		    <!-- Right Nav Section -->
 		    <ul class="right">
+              <li class="active"><a href="/logout">Welcome {{ user.username }}</a></li>
 		    </ul>
 
 		    <!-- Left Nav Section -->
@@ -68,6 +69,5 @@
 		  </section>
 	</nav>
     {% block content %}{% endblock %}
-
     </body>
 </html>
