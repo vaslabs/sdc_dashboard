@@ -59,6 +59,7 @@ function drawPath(data) {
       }
       flightPlanCoordinates.push(new google.maps.LatLng(gpsEntries[i].latitude, gpsEntries[i].longitude));
   }
+
   var flightPath = new google.maps.Polyline({
   path: flightPlanCoordinates,
   geodesic: true,
@@ -68,7 +69,8 @@ function drawPath(data) {
   });
 
   flightPath.setMap(map);
-
+  if (skyDivingEvents == null)
+    return;
   //airplane
   flightPlanCoordinates = [];
   for (var i = wasLeftAt; i < gpsEntries.length; i++) {
