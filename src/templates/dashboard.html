@@ -14,7 +14,20 @@
     <script type="text/javascript">
 
       function getMyData() {
-        getJSONResponse('/dashboard/session', initialize);
+        var url = '/dashboard/session';
+        var currentURLParts = document.URL.split('/');
+        var sessionId;
+        var logBookPresent = -1;
+        for (var i = 0; i < currentURLParts.length; i++) {
+          if (currentURLParts[i] == "logbook")
+            logBookPresent = i;
+        }
+        if (logBookPresent >= 0 && logBookPresent < currentURLParts.length - 1) {
+          sessionId = currentURLParts[logBookPresent+1];
+          url += "/" + sessionId;
+        }
+
+        getJSONResponse(url, initialize);
       }
 
       var map;

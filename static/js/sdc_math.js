@@ -68,9 +68,10 @@ function TakeOffEvent(timestamp) {
 
 }
 
-function FreeFallEvent(timestamp) {
+function FreeFallEvent(timestamp, altitude) {
   var self = this;
   self.timestamp = timestamp;
+  self.altitude = altitude;
 }
 
 function CanopyEvent(timestamp) {
@@ -151,7 +152,8 @@ function identifyFlyingEvents(barometerEntries) {
 
   var dramaticAltitudeDecrease = fastWalkForDown(-30, maximumAltitude.index, maximumAltitude.altitude);
 
-  events['freefall'] = new FreeFallEvent(barometerEntries[dramaticAltitudeDecrease].timestamp);
+  events['freefall'] = new FreeFallEvent(barometerEntries[dramaticAltitudeDecrease].timestamp, 
+                                         barometerEntries[dramaticAltitudeDecrease].altitude);
 
   var velocityEntries = calculateVerticalVelocityEntries(barometerEntries, 50);
 
@@ -179,21 +181,7 @@ function findMaximumAltitude(barometerValues, beginFrom) {
     return maxBarometerEntry;
 }
 
-function findMaximumSpeed(velocityEntries) {
-  var maxSpeed = null;
-  for (var i = 1; i < velocityEntries.length; i++) {
-    if (velocityEntries[i].velocity < 0) {
-      if ( maxSpeed == null ) {
-        maxSpeed = velocityEntries[i];
-        maxSpeed.index = i;
-      } else if (velocityEntries[i].velocity < maxSpeed.velocity) {
-        maxSpeed = velocityEntries[i];
-        maxSpeed.index = i;
-      }
-    }
-  }
-  return maxSpeed;
-}
+
 
 
 function averageBarometerValues(barometerValues, density) {
@@ -213,3 +201,44 @@ function averageBarometerValues(barometerValues, density) {
   return avgBarometerEntries;
 
 }
+
+
+function findMaximumSpeed(velocityEntries) {
+  var maxSpeed = null;
+  for (var i = 1; i < velocityEntries.length; i++) {
+    if (velocityEntries[i].velocity < 0) {
+      if ( maxSpeed == null ) {
+        maxSpeed = velocityEntries[i];
+        maxSpeed.index = i;
+      } else if (velocityEntries[i].velocity < maxSpeed.velocity) {
+        maxSpeed = velocityEntries[i];
+        maxSpeed.index = i;
+      }
+    }
+  }
+  return maxSpeed;
+}
+
+function calculate_metrics(session_data) {
+  var avgBarometerEntries = averageBarometerValues(session_data.barometerEntries, 3);
+  if (avgBarometerEntries.length == 0 ) {
+      return {'freefalltime':"N/A", 'exitAltitude':"N/A", 'deploymentAltitude':"N/A", 'maxVelocity':"N/A"};
+
+  }
+  var velocities = calculateVerticalVelocityEntries(avgBarometerEntries, 0);
+  var max_speed = findMaximumSpeed(velocities); //logbooked
+  var events = identifyFlyingEvents(avgBarometerEntries);  
+  var totalFreeFallTime = (events.canopy.timestamp - events.freefall.timestamp)/1000; //logbooked
+  var exitAltitude = events.freefall.altitude;
+  var deploymentAltitude;
+  for (var i = 0; i < avgBarometerEntries.length; i++) {
+    if (avgBarometerEntries[i].timestamp > events.canopy.timestamp) {
+      deploymentAltitude = avgBarometerEntries[i].altitude;
+      break;
+    }
+  }
+
+  return {'freefalltime':totalFreeFallTime, 'exitAltitude':exitAltitude, 'deploymentAltitude':deploymentAltitude, 'maxVelocity':max_speed.velocity};
+
+}
+
