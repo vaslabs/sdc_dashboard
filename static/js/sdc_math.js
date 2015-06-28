@@ -87,6 +87,8 @@ function LandedEvent(timestamp) {
 
 function identifyFlyingEvents(barometerEntries) {
   var events = {};
+  if (barometerEntries.length == 0)
+    return;
   function fastWalkForUp(min_difference, currentIndex, current_altitude) {
     if (currentIndex >= barometerEntries.length) {
       currentIndex /= 2;

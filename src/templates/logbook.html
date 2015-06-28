@@ -13,11 +13,12 @@
     <script type="text/html" id="session-template">
       <div class="row">
         <div class="small-12 columns">
-          <h3 class="session_id"><a data-bind="{attr: {href: '#' + number}, text: '#' + number}"></a></h3>
-          <p data-bind="text: date"></p>
+          <div class="panel">
+            <h3 class="session_id"><a data-bind="{attr: {href: '#' + number}, text: '#' + number}"></a></h3>
+            <p data-bind="text: date"></p>
+          </div>
         </div>
       </div>
-      <hr />
     </script>
     <script type="text/html" id="session-details-template">
       <div class="row" data-bind="attr: {id: number}" >
