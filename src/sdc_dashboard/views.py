@@ -4,6 +4,10 @@ import json, string, random
 from django.http import HttpResponse
 from SDC import settings
 import datetime
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authtoken.models import Token
+from django.views.decorators.csrf import csrf_exempt
+
 # Create your views here.
 def index(request):
 	return user_dashboard(request)
@@ -99,3 +103,22 @@ def get_logbook_screen(request):
 	if (not current_user.is_authenticated()):
 		return redirect('/login')
 	return render(request, 'logbook.html')
+
+@csrf_exempt
+def save_session_data(request, format=None):
+	token_key = request.META['HTTP_AUTHORIZATION'].split(' ')[1]
+	token = Token.objects.get(key=token_key)
+	current_user = token.user
+	received_json_data=json.loads(request.body)
+	date_submitted = datetime.datetime.now()
+	file_name = current_user.username + str(date_submitted.time()) + '.json'
+	data_file = open(settings.DATA_DIR + "/" + file_name, 'w')
+	data_file.write(json.dumps(received_json_data))
+	data_file.close()
+	skydiver = SkyDiver.objects.get(username=current_user.username)
+	sessionData = SessionData(skyDiver=skydiver, submittedDate=date_submitted, location = file_name)
+	sessionData.save()
+	return HttpResponse(json.dumps({'message':'OK', 'code': 200}), content_type="application/json")
+ 
+
+
