@@ -15,5 +15,6 @@ urlpatterns = [
     url(r'^shared_session/(?P<linkid>\w{16})', views.get_shared_session, name='shared_session'),
     url(r'^shared_session/l/(?P<linkid>\w{16})', views.view_shared_session, name='view_shared_session'),
     url(r'^submit$', views.save_session_data, name='save_session_data'),
+    url(r'^apitoken$', views.get_api_token, name='api_token'),
 
 ]
