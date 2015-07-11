@@ -3,6 +3,8 @@
 <title>My performance</title>
 {% endblock %}
 {% block scripts %}
+<script src="/static/js/graph_utils.js"></script>
+
 <script type="text/javascript"
           src="https://www.google.com/jsapi?autoload={
             'modules':[{
@@ -20,6 +22,7 @@
       var myVerticalVelocityDataRows;
 
       function initialiseGraphs(json_data) {
+        json_data = sort_data(json_data);
         myBarometerData = json_data["barometerEntries"];
         myBarometerData = averageBarometerValues(myBarometerData, 3);
         myVerticalVelocityDataRows = calculateVerticalVelocity(myBarometerData, 50);

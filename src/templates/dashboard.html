@@ -33,6 +33,7 @@
       var map;
       var myData;
       function initialize(data) {
+        data = sort_data(data);
         var latitude = data.gpsEntries[0].latitude;
         var longitude = data.gpsEntries[0].longitude;
         var mapOptions = {
