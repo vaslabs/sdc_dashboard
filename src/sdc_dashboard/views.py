@@ -130,4 +130,9 @@ def save_session_data(request, format=None):
 	sessionData.save()
 	return HttpResponse(json.dumps({'message':'OK', 'code': 200}), content_type="application/json")
  
+def get_qrcode_api(request):
+	current_user = request.user
+	if (not current_user.is_authenticated()):
+		return redirect('/login')
+	return render(request, 'api.html')
 
