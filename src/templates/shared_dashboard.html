@@ -20,6 +20,9 @@
       var map;
       var myData;
       function initialize(data) {
+        $.each(data, function(index, session_data) {
+          data[index] = sort_data(session_data);
+        });
         var latitude = data.gpsEntries[0].latitude;
         var longitude = data.gpsEntries[0].longitude;
         var mapOptions = {
