@@ -104,6 +104,16 @@ def get_logbook_screen(request):
 		return redirect('/login')
 	return render(request, 'logbook.html')
 
+
+def get_api_token(request):
+	current_user = request.user
+	if (not current_user.is_authenticated()):
+		return HttpResponse(json.dumps({'message':'authentication error', 'code': 401}), content_type="application/json")
+	token = Token.objects.get(user=current_user)
+	response_json = {"token":token.key}
+	return HttpResponse(json.dumps(response_json), content_type="application/json")
+
+
 @csrf_exempt
 def save_session_data(request, format=None):
 	token_key = request.META['HTTP_AUTHORIZATION'].split(' ')[1]
@@ -120,5 +130,4 @@ def save_session_data(request, format=None):
 	sessionData.save()
 	return HttpResponse(json.dumps({'message':'OK', 'code': 200}), content_type="application/json")
  
-
 

@@ -142,7 +142,6 @@ function identifyFlyingEvents(barometerEntries) {
     }
   }
 
-  var slope;
 
   var current_altitude = barometerEntries[0].altitude;
   var dramaticAltitudeIncreasePoint = fastWalkForUp(20, 0, current_altitude);
@@ -222,12 +221,12 @@ function findMaximumSpeed(velocityEntries) {
 }
 
 function calculate_metrics(session_data) {
-  var avgBarometerEntries = averageBarometerValues(session_data.barometerEntries, 3);
+  var avgBarometerEntries = averageBarometerValues(session_data.barometerEntries, 1);
   if (avgBarometerEntries.length == 0 ) {
       return {'freefalltime':"N/A", 'exitAltitude':"N/A", 'deploymentAltitude':"N/A", 'maxVelocity':"N/A"};
 
   }
-  var velocities = calculateVerticalVelocityEntries(avgBarometerEntries, 50);
+  var velocities = calculateVerticalVelocityEntries(session_data.barometerEntries, 50);
   var max_speed = findMaximumSpeed(velocities); //logbooked
   var events = identifyFlyingEvents(avgBarometerEntries);  
   var totalFreeFallTime = (events.canopy.timestamp - events.freefall.timestamp)/1000; //logbooked
