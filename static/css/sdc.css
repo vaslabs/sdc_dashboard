@@ -62,3 +62,12 @@ div.logbook-entry {
 .button.semi-round {
     border-radius: 12px;
 }
+
+#api-qrcode img{
+  display: block;
+  left: 45%;
+  padding: 0;
+  float: right;
+  position: fixed;
+  top: 50%;
+}
