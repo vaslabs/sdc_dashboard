@@ -136,3 +136,17 @@ def get_qrcode_api(request):
 		return redirect('/login')
 	return render(request, 'api.html')
 
+def get_demo_page(request):
+	return render(request, 'demo.html')
+
+def get_demo_data(request):
+	return_value = {}
+	try:
+		data_file = open(settings.DATA_DIR + "/stephanie_2015_06_21.json")
+		data = data_file.readline()
+		data_file.close()
+		return HttpResponse(data, content_type="application/json")
+	except:
+		return_value = {"error":"500"}
+		return HttpResponse(json.dumps(return_value), content_type="application/json")	
+

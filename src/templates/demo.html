@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block head %}
+<title>Demo dashboard</title>
+{% endblock %}
+{% block scripts %}
+
+
+    <link rel="stylesheet" href="/static/css/progress_bar.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="/static/js/map_utils.js"></script>
+    <script src="/static/js/graph_utils.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry"></script>
+
+    <script type="text/javascript">
+
+      function getMyData() {
+        var url = '/dashboard/demodata';
+
+        getJSONResponse(url, initialize);
+      }
+
+      var map;
+      var myData;
+      function initialize(data) {
+        data = sort_data(data);
+        var latitude = data.gpsEntries[0].latitude;
+        var longitude = data.gpsEntries[0].longitude;
+        var mapOptions = {
+          center: { lat: latitude, lng: longitude},
+          zoom: 16
+        };
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+        myData = data;
+        setUpControlPanel();
+      }
+      google.maps.event.addDomListener(window, 'load', getMyData);
+    </script>
+    <script type="text/javascript">
+
+      function setUpControlPanel() {
+        $('#session-path-button').click(function() {
+          drawPath(myData);
+        });
+
+        $('#animation-button').click(function() {
+          startAnimating(myData);
+        });
+        $('#real-speed-button').click(function() {
+          speed = 1;
+        });
+        $('#fast-forward-button').click(function() {
+          speed = 100;
+        });
+
+      } 
+    </script>
+{% endblock %}
+{% block content %}
+    
+<div class="row fullHeight fullWidth">
+  <div class="large-10 medium-8 small-8 columns fullHeight">
+    <div id="map-canvas"></div>
+  </div>
+    <div class="large-2 medium-4 small-4 columns fullHeight">
+       <div id="control-panel" class="fullHeight">
+          <div class="row">
+            <div class="small-12 columns">
+              <h3>Status</h3>
+            </div>
+            <div class="small-12 columns" style="min-height: 64px;">
+              <p class="centeredImage"><img id="status-image" /></p>
+            </div>
+          </div>
+          <div class="medium-12 columns">
+            <div id="session-path-button" class="medium-12 columns medium semi-round button"><i class="step fi-branch size-24"></i>Path</div>
+          </div>
+          <div class="medium-12 columns">
+            <div id="animation-button" class="medium-12 columns medium semi-round button"><i class="step fi-play size-24"></i>Movie</div>
+          </div>
+          <div class="medium-12 columns">
+            <a href="/dashboard/graphs" class="medium-12 columns medium semi-round button"><i class="step fi-graph-trend size-24"></i>Stats</a>
+          </div>
+          <div class="medium-12 columns">
+            <div id="real-speed-button" class="medium-6 small-12 columns">
+              <div class="small semi-round button"><i class="fi-play size-16"></i></div>
+            </div>
+
+            <div id="fast-forward-button" class="medium-6 small-12 columns">
+              <div class="small semi-round button"><i class="fi-next size-16"></i></div>
+            </div>
+          </div>
+
+          <div class="medium-12 columns">
+            <div class="small-12 columns">
+              <div id="share-session-button" class="medium-6 small-12 columns medium semi-round button"><i class="step fi-share size-16"></i></div>
+            </div>
+          </div>
+       </div>
+    </div>
+  </div>
+</div>
+
+<div id="dialog" title="Share your session" style="display: none">
+  <p id="link-share" style="color: black"></p>
+</div>
+{% endblock content %}
