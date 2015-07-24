@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'^submit$', views.save_session_data, name='save_session_data'),
     url(r'^apitoken$', views.get_api_token, name='api_token'),
     url(r'^apiqr$', views.get_qrcode_api, name='api_qr'),
-
+    url(r'^demo$', views.get_demo_page, name='demo_page'),
+    url(r'^demodata$', views.get_demo_data, name='demo_data'),
 ]
