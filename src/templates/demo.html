@@ -10,7 +10,11 @@
     <script src="/static/js/map_utils.js"></script>
     <script src="/static/js/graph_utils.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry"></script>
-
+    <style type="text/css">
+      nav.top-bar {
+        display: none !important;
+      }
+    </style>
     <script type="text/javascript">
 
       function getMyData() {
@@ -79,9 +83,6 @@
             <div id="animation-button" class="medium-12 columns medium semi-round button"><i class="step fi-play size-24"></i>Movie</div>
           </div>
           <div class="medium-12 columns">
-            <a href="/dashboard/graphs" class="medium-12 columns medium semi-round button"><i class="step fi-graph-trend size-24"></i>Stats</a>
-          </div>
-          <div class="medium-12 columns">
             <div id="real-speed-button" class="medium-6 small-12 columns">
               <div class="small semi-round button"><i class="fi-play size-16"></i></div>
             </div>
@@ -91,11 +92,6 @@
             </div>
           </div>
 
-          <div class="medium-12 columns">
-            <div class="small-12 columns">
-              <div id="share-session-button" class="medium-6 small-12 columns medium semi-round button"><i class="step fi-share size-16"></i></div>
-            </div>
-          </div>
        </div>
     </div>
   </div>
