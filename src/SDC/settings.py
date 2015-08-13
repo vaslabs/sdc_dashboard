@@ -90,8 +90,8 @@ DATABASES = {
         'NAME': 'sdc-dashboard-db',
         'USER': '',
         'PASSWORD': '',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
+        'HOST': os.environ['OPENSHIFT_MYSQL_DB_HOST'],   # Or an IP Address that your DB is hosted on
+        'PORT': os.environ['OPENSHIFT_MYSQL_DB_PORT'],
     }
 }
 
