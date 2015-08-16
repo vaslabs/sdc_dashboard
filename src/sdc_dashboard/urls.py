@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^apiqr$', views.get_qrcode_api, name='api_qr'),
     url(r'^demo$', views.get_demo_page, name='demo_page'),
     url(r'^demodata$', views.get_demo_data, name='demo_data'),
+    url(r'^logbook_entries$', views.get_logbook_entries, name='logbook_entries')
 ]

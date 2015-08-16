@@ -13,7 +13,7 @@
     <script type="text/html" id="session-template">
       <div class="small-12 columns">
         <div class="panel">
-          <h3 class="session_id"><a data-bind="{attr: {href: '#' + number}, text: '#' + number}"></a></h3>
+          <h3 class="session_id"><a data-bind="{attr: {href: '#' + number()}, text: '#' + number()}"></a></h3>
           <p data-bind="text: date"></p>
         </div>
       </div>
@@ -22,33 +22,33 @@
       <div class="large-6 medium-12 columns logbook-entry" data-bind="css: {leftalign: number%2==0}">
         <div class="large-12 columns" data-bind="attr: {id: number}" >
           <div class="small-12 columns">
-            <h3 class="session_id"><a data-bind="{attr: {href: '/dashboard/logbook/' + number}, text: '#' + number}"></a></h3>
+            <h3 class="session_id"><a data-bind="{attr: {href: '/dashboard/logbook/' + number()}, text: '#' + number()}"></a></h3>
             <p class="datetime" data-bind="text: date"></p>
           </div>
         </div>
         <div class="logbook-details large-12 columns" >
           <div class="small-12 columns">
-            <p>Free fall time: <span data-bind="{text: metrics.freefalltime}"></span></p>
+            <p>Free fall time: <span data-bind="{text: freefalltime}"></span></p>
           </div>
           <div class="small-12 columns">
-            <p>Exit altitude: <span data-bind="{text: metrics.exitAltitude}"></span></p>
+            <p>Exit altitude: <span data-bind="{text: exitAltitude}"></span></p>
           </div>
           <div class="small-12 columns">
-            <p>Deployment altitude: <span data-bind="{text: metrics.deploymentAltitude}"></span></p>
+            <p>Deployment altitude: <span data-bind="{text: deploymentAltitude}"></span></p>
           </div>
           <div class="small-12 columns">
-            <p>Max velocity: <span data-bind="{text: metrics.maxVelocity}"></span></p>
+            <p>Max velocity: <span data-bind="{text: maxVelocity}"></span></p>
           </div>
           <div class="small-12 columns">
-            <p>Location: <span data-bind="attr: {id:'session-location-'+number}"></span></p>
+            <p>Location: <span data-bind="attr: {id:'session-location-'+number()}, text: location_name"></span></p>
           </div>
         </div>
       </div>
     </script>
     <script type="text/javascript">
 
-      function getMyData() {
-        getJSONResponse('/dashboard/sessions', initialize);
+      function getMyData() {  
+        getJSONResponse('/dashboard/logbook_entries', initialize);
       }
 
       var map;
@@ -60,35 +60,38 @@
     </script>
     <script type="text/javascript">
 
-      function SkydivingSession(date, number, session_calculated_data, location) {
+      function SkydivingSession(date, number, metrics, location, location_name) {
         var self = this;
-        self.date = date;
-        self.number = number;
-        self.metrics = session_calculated_data;
-        self.location = location;
+        self.date = ko.observable(date);
+        self.number = ko.observable(number);
+        self.freefalltime = ko.observable(metrics.freefalltime);
+        self.exitAltitude = ko.observable(metrics.exitAltitude);
+        self.deploymentAltitude = ko.observable(metrics.deploymentAltitude);
+        self.maxVelocity = ko.observable(metrics.maxVelocity);
+        self.latitude = location.lat;
+        self.longitude = location.lng;
+        self.location_name = ko.observable(location_name);
+        if (self.location_name() == null) {
+          getLocationDetails(self.latitude, self.longitude, self.location_name, null);
+        }
       }
 
       function initialize(session_data) {
-        $.each(session_data, function(index, session) {
-          session_data[index] = sort_data(session);
-        });
-        var sessions = [];
+
+        var sessions = ko.observableArray();
         for (var i = session_data.length - 1; i >= 0; i--) {
-          var session = session_data[i];
-          var date = new Date(session.gpsEntries[0].timestamp)
-          var metrics = calculate_metrics(session);
-          var location = {lat:session.gpsEntries[0].latitude, lng: session.gpsEntries[0].longitude};
-          sessions.push(new SkydivingSession(date, i, metrics, location));
+          var date = new Date(session_data[0].timeInMillis)
+          var metrics = session_data[0].metrics;
+          var location = {lat: session_data[0].latitude, lng: session_data[0].longitude};
+          sessions.push(new SkydivingSession(date, i, metrics, location, session_data[0].location));
         }
 
         prepareUI(sessions);
       }
 
+
       function prepareUI(sessions) {
          ko.applyBindings({"sessions":sessions});
-         for (var i = 0; i < sessions.length; i++) {
-          getLocationDetails(sessions[i].location.lat, sessions[i].location.lng, $('#session-location-'+i));
-         }
       }
         
     </script>

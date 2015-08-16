@@ -37,3 +37,4 @@ class Logbook(models.Model):
     exitAltitude = models.FloatField()
     deploymentAltitude = models.FloatField()
     maxVerticalVelocity = models.FloatField()
+    date = models.DateTimeField("date of session")
