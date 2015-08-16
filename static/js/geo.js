@@ -1,9 +1,12 @@
-function getLocationDetails(lat, lng, updateField) {
+function getLocationDetails(lat, lng, ko_field, callback) {
     var geocoder = new google.maps.Geocoder();
     var latlng = new google.maps.LatLng(lat, lng);
     geocoder.geocode({'latLng': latlng}, function(results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
-        updateField.text(results[0].formatted_address);
+        ko_field(results[0].formatted_address);
       }
     });
+
+    if (callback != null)
+    	callback();
 }

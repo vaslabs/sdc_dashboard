@@ -150,3 +150,12 @@ def get_demo_data(request):
 		return_value = {"error":"500"}
 		return HttpResponse(json.dumps(return_value), content_type="application/json")	
 
+
+def get_logbook_entries(request):
+	current_user = request.user
+	if (not current_user.is_authenticated()):
+		return redirect('/login')
+	return_value = [{'metrics':{'freefalltime':93.67, 'exitAltitude':3415.65, 'deploymentAltitude':668.26,\
+	'maxVelocity':-85.18}, 'location':None, 'timeInMillis':1434871015136, 'latitude':35.01625003, 'longitude':33.72334638}]
+	return HttpResponse(json.dumps(return_value), content_type="application/json")
+
