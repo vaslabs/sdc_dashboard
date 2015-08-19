@@ -88,8 +88,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'sdc-dashboard-db',
-        'USER': '',
-        'PASSWORD': '',
+        'USER': 'skydiverninja',
+        'PASSWORD': 'b058b5a5505e3b8f',
         'HOST': os.environ['OPENSHIFT_MYSQL_DB_HOST'],   # Or an IP Address that your DB is hosted on
         'PORT': os.environ['OPENSHIFT_MYSQL_DB_PORT'],
     }
