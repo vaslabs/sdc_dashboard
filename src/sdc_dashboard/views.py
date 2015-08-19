@@ -7,6 +7,7 @@ import datetime
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
+from sdc_utils import fetch_logbook
 
 # Create your views here.
 def index(request):
@@ -155,7 +156,9 @@ def get_logbook_entries(request):
 	current_user = request.user
 	if (not current_user.is_authenticated()):
 		return redirect('/login')
-	return_value = [{'metrics':{'freefalltime':93.67, 'exitAltitude':3415.65, 'deploymentAltitude':668.26,\
-	'maxVelocity':-85.18}, 'location':None, 'timeInMillis':1434871015136, 'latitude':35.01625003, 'longitude':33.72334638}]
+
+	skydiver = SkyDiver.objects.get(username=current_user.username)
+
+	returnValue = fetch_logbook(skydiver)
 	return HttpResponse(json.dumps(return_value), content_type="application/json")
 
