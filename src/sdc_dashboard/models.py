@@ -1,4 +1,6 @@
 from django.db import models
+import calendar
+import json
 
 # Create your models here.
 class SkyDiver(models.Model):
@@ -38,3 +40,20 @@ class Logbook(models.Model):
     deploymentAltitude = models.FloatField()
     maxVerticalVelocity = models.FloatField()
     date = models.DateTimeField("date of session")
+    notes = models.CharField(max_length=1024)
+
+    def __str__(self):
+        json_signature = {'id':self.id,\
+                            'metrics':{\
+                                'freefalltime':self.freeFallTime,\
+                                'exitAltitude':self.exitAltitude,\
+                                'deploymentAltitude':self.deploymentAltitude,\
+                                'maxVelocity':self.maxVerticalVelocity,\
+                            },\
+                            'timeInMillis':calendar.timegm(self.date.timetuple())*1000,
+                            'latitude':str(self.location.latitude),
+                            'longitude':str(self.location.longitude),
+                            'location':self.location.name,
+                            'notes':self.notes
+                         }
+        return json.dumps(json_signature)

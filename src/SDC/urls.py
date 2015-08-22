@@ -19,6 +19,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     url(r'^dashboard/', include('sdc_dashboard.urls')),
+    url(r'^logbook/', include('sdc_dashboard.logbook_urls')),
     url(r'^$', include('sdc_dashboard.urls')), 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', 'django.contrib.auth.views.login', name='login', kwargs={'template_name': 'registration/login.html'}),
