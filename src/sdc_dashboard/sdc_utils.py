@@ -1,11 +1,16 @@
-from .models import Logbook, sessionData
-
+from .models import Logbook, SessionData
+from SDC import settings
+import json
 
 def fetch_logbook(skydiver):
-	logbookEntries = Logbook.objects.filter(skyDiver=skydiver)
-	sessionEntries = SessionData.objects.filter(skyDiver=skydiver).exclude(sessionData in [ l.sessionData for l in logbookEntries ])
-	for sessionEntry in sessionEntries:
-		logbookEntry.append({'raw':logbookRawData(sessionEntry)})
+	logbookEntries = list(Logbook.objects.filter(skyDiver=skydiver))
+	print logbookEntries
+	sessionEntries = SessionData.objects.filter(skyDiver=skydiver)
+	exclude_list = [logbookEntry.sessionData for logbookEntry in logbookEntries]
+	selectedSessionEntries = [ sessionEntry for sessionEntry in sessionEntries if sessionEntry not in exclude_list]
+
+	for sessionEntry in selectedSessionEntries:
+		logbookEntries.append({'raw':logbookRawData(sessionEntry)})
 
 	return logbookEntries
 
@@ -16,4 +21,4 @@ def logbookRawData(sessionEntry):
 	data_file = open(settings.DATA_DIR + "/" + sessionEntry.location)
 	data = data_file.readline()
 	data_file.close()
-	return data
+	return json.loads(data)

@@ -159,6 +159,6 @@ def get_logbook_entries(request):
 
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 
-	returnValue = fetch_logbook(skydiver)
+	return_value = fetch_logbook(skydiver)
 	return HttpResponse(json.dumps(return_value), content_type="application/json")
 
