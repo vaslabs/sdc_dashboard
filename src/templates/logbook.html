@@ -80,10 +80,18 @@
 
         var sessions = ko.observableArray();
         for (var i = session_data.length - 1; i >= 0; i--) {
-          var date = new Date(session_data[0].timeInMillis)
-          var metrics = session_data[0].metrics;
-          var location = {lat: session_data[0].latitude, lng: session_data[0].longitude};
-          sessions.push(new SkydivingSession(date, i, metrics, location, session_data[0].location));
+          if ('raw' in session_data[i]) {
+            var session = session_data[i]['raw'];
+            var date = new Date(session.gpsEntries[0].timestamp)
+            var metrics = calculate_metrics(session);
+            var location = {lat:session.gpsEntries[0].latitude, lng: session.gpsEntries[0].longitude};
+            sessions.push(new SkydivingSession(date, i, metrics, location));
+          } else {
+            var date = new Date(session_data[0].timeInMillis)
+            var metrics = session_data[0].metrics;
+            var location = {lat: session_data[0].latitude, lng: session_data[0].longitude};
+            sessions.push(new SkydivingSession(date, i, metrics, location, session_data[0].location));
+          }
         }
 
         prepareUI(sessions);
