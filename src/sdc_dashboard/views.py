@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import SkyDiver, SessionData, ShareLink
+from .models import SkyDiver, SessionData, ShareLink, Location, Logbook
 import json, string, random
 from django.http import HttpResponse
 from SDC import settings
@@ -8,7 +8,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from sdc_utils import fetch_logbook
-
+from datetime import datetime
 # Create your views here.
 def index(request):
 	return user_dashboard(request)
@@ -152,6 +152,7 @@ def get_demo_data(request):
 		return HttpResponse(json.dumps(return_value), content_type="application/json")	
 
 
+
 def get_logbook_entries(request):
 	current_user = request.user
 	if (not current_user.is_authenticated()):
@@ -161,4 +162,53 @@ def get_logbook_entries(request):
 
 	return_value = fetch_logbook(skydiver)
 	return HttpResponse(json.dumps(return_value), content_type="application/json")
+
+@csrf_exempt
+def save_logbook(request):
+	current_user = request.user
+	if request.method == 'GET':
+		return HttpResponse(json.dumps({'error':"Not supported method"}))
+	if (not current_user.is_authenticated()):
+		return HttpResponse(json.dumps({'message':'authentication error', 'code': 401}), content_type="application/json")
+
+	skydiver = SkyDiver.objects.get(username=current_user.username)
+	logbook_json = request.POST
+	if (logbook_json["fromRaw"]):
+		return save_first_time_logbook(logbook_json, skydiver)
+	else:
+		return overwrite_logbook(logbook_json, skydiver)
+
+
+def save_first_time_logbook(logbook_data, skydiver):
+	print logbook_data
+	sessionID = logbook_data['id']
+	sessionData = validateSessionId(sessionID, skydiver)
+	if (sessionData == None):
+		return HttpResponse(json.dumps({'message':'authentication error. Don\'t be sneaky', 'code': 401}), content_type="application/json")
+	try:
+		location = Location.objects.get(latitude=sessionData['latitude'], longitude=sessionData['longitude'], name=sessionData['location_name'])
+	except:
+		location = Location(latitude=logbook_data['latitude'], longitude=logbook_data['longitude'], name=logbook_data['location_name'])
+		location.save()
+	dateOfSession = datetime.fromtimestamp(int(logbook_data['date'])/1000)
+	logbook = Logbook(skyDiver=skydiver, sessionData=sessionData, location=location, freeFallTime=logbook_data['freefalltime'], \
+		exitAltitude=logbook_data['exitAltitude'], deploymentAltitude=logbook_data['deploymentAltitude'], maxVerticalVelocity=logbook_data['maxVerticalVelocity'],\
+		date=dateOfSession, notes=logbook_data['notes'])
+	try:
+		logbook.save()
+		return HttpResponse(json.dumps({"message":"OK"}), content_type="application/json")
+	except Exception as e:
+		print e
+		return HttpResponse(json.dumps({"message":"OOoops!", "code":500}), content_type="application/json")
+
+
+def validateSessionId(sessionId, skydiver):
+	print skydiver, sessionId
+	try:
+		sessionData = SessionData.objects.get(skyDiver=skydiver, id=sessionId)
+	except:
+		return None
+	return sessionData 
+
+
 

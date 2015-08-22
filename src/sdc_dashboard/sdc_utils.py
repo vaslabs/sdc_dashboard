@@ -3,15 +3,16 @@ from SDC import settings
 import json
 
 def fetch_logbook(skydiver):
-	logbookEntries = list(Logbook.objects.filter(skyDiver=skydiver))
+	logbookObjects = Logbook.objects.filter(skyDiver=skydiver)
+	logbookEntries = [json.loads(l.__str__()) for l in logbookObjects]
+
 	print logbookEntries
 	sessionEntries = SessionData.objects.filter(skyDiver=skydiver)
-	exclude_list = [logbookEntry.sessionData for logbookEntry in logbookEntries]
+	exclude_list = [logbookObject.sessionData for logbookObject in logbookObjects]
 	selectedSessionEntries = [ sessionEntry for sessionEntry in sessionEntries if sessionEntry not in exclude_list]
 
 	for sessionEntry in selectedSessionEntries:
-		logbookEntries.append({'raw':logbookRawData(sessionEntry)})
-
+		logbookEntries.append({'raw':logbookRawData(sessionEntry), "id":sessionEntry.id})
 	return logbookEntries
 
 
