@@ -20,11 +20,12 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = [
     url(r'^dashboard/', include('sdc_dashboard.urls')),
     url(r'^logbook/', include('sdc_dashboard.logbook_urls')),
+    url(r'^invites/', include('sdc_invites.urls')),
     url(r'^$', include('sdc_dashboard.urls')), 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', 'django.contrib.auth.views.login', name='login', kwargs={'template_name': 'registration/login.html'}),
     url(r'^logout/$', 'django.contrib.auth.views.logout', name='logout', kwargs={'template_name': 'registration/logout.html'}),
     url('^', include('django.contrib.auth.urls')),
-]	
+]
 
 urlpatterns += staticfiles_urlpatterns()

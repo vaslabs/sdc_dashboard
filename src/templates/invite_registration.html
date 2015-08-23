@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}
+Register
+{% endblock %}
+{% block content %}
+<form>
+  <div id='registration-form-holder' class="row collapse">
+	  <div class="row">
+	    <div class="large-12 columns">
+	      <div id='step-1-holder' class="row collapse">
+	        <div id="invitation-token-holder" class="small-10 columns">
+	          <input type="text" placeholder="Invitation code">
+	        </div>
+	        <div id="invitation-apply" class="small-2 columns">
+	          <a href="#" class="button postfix">Go</a>
+	        </div>
+	      </div>
+	      <div id='step-2-holder' class="row collapse"></div>
+	      <div id='step-3-holder' class="row collapse"></div>
+	      <div id='step-4-holder' class="row collapse"></div>
+	      <div id='step-5-holder' class="row collapse"></div>
+
+	    </div>
+	  </div>
+  </div>
+</form>
+
+<script type="text/javascript">
+	$('#invitation-apply').click(function() {
+		var url = '/invites/validate/';
+		var data = {'invitation_token': $('#invitation-token-holder input').val()}
+		getJSONResponse(next_step);
+	});
+
+	function next_step(data) {
+		if (data.code == 'OK') {
+			showUsernameTemplate();
+		} else {
+			showInvalidTokenMessage();
+		}
+	}
+
+	function showUsernameTemplate() {
+		$('#step-1-holder').css({'display':'none'});
+		
+		jQuery('<div/>', {
+		    id: 'invitation-username-holder',
+		    class: "small-10 columns"
+		}).appendTo('#step-2-holder');
+		
+		jQuery('<input/>', {
+			type:'text',
+			placeholder: 'username'
+		}).appendTo('#invitation-username-holder');
+
+		jQuery('<div/>', {
+		    id: 'invitation-username-apply',
+		    class: "small-2 columns"
+		}).appendTo('#step-2-holder');
+		
+		jQuery('<a/>', {
+			href:'#',
+			class: 'button postfix',
+			text: 'Go'
+		}).appendTo('#invitation-username-apply');
+	}
+
+	function showEmailTemplate() {
+		$('#step-2-holder').css({'display':'none'});
+		
+		jQuery('<div/>', {
+		    id: 'invitation-email-holder',
+		    class: "small-10 columns"
+		}).appendTo('#step-3-holder');
+		
+		jQuery('<input/>', {
+			type:'text',
+			placeholder: 'email'
+		}).appendTo('#invitation-email-holder');
+
+		jQuery('<div/>', {
+		    id: 'invitation-email-apply',
+		    class: "small-2 columns"
+		}).appendTo('#step-3-holder');
+		
+		jQuery('<a/>', {
+			href:'#',
+			class: 'button postfix',
+			text: 'Go'
+		}).appendTo('#invitation-email-apply');
+	}
+
+	function showPasswordTemplate() {
+		$('#step-3-holder').css({'display':'none'});
+		
+		jQuery('<div/>', {
+		    id: 'invitation-password-holder',
+		    class: "small-10 columns"
+		}).appendTo('#step-4-holder');
+		
+		jQuery('<input/>', {
+			type:'password',
+			placeholder: 'password'
+		}).appendTo('#invitation-password-holder');
+
+		jQuery('<div/>', {
+		    id: 'invitation-password-apply',
+		    class: "small-2 columns"
+		}).appendTo('#step-4-holder');
+		
+		jQuery('<a/>', {
+			href:'#',
+			class: 'button postfix',
+			text: 'Go'
+		}).appendTo('#invitation-password-apply');
+	}
+
+	function showValidationPasswordTemplate() {
+		$('#step-4-holder').css({'display':'none'});
+		
+		jQuery('<div/>', {
+		    id: 'invitation-validationpassword-holder',
+		    class: "small-10 columns"
+		}).appendTo('#step-5-holder');
+		
+		jQuery('<input/>', {
+			type:'repeat password',
+			placeholder: 'password'
+		}).appendTo('#invitation-validationpassword-holder');
+
+		jQuery('<div/>', {
+		    id: 'invitation-validationpassword-apply',
+		    class: "small-2 columns"
+		}).appendTo('#step-5-holder');
+		
+		jQuery('<a/>', {
+			href:'#',
+			class: 'button postfix',
+			text: 'Go'
+		}).appendTo('#invitation-validationpassword-apply');
+	}
+
+</script>
+{% endblock %}

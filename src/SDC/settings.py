@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'sdc_dashboard',
+    'sdc_invites'
 )
 
 MIDDLEWARE_CLASSES = (
