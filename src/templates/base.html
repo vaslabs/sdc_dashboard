@@ -36,6 +36,28 @@
 			    
 			    return result;
 			} 
+
+			function getJSONPostResponse(jsurl, pdata, method_call) {
+
+			    var result = null;
+
+			    $.ajax({
+			        url: jsurl,
+			        cache: true,
+			        type: 'post',
+			        data: pdata,
+			        dataType: 'json',
+			        async: method_call != null,
+			        success: function(data) {
+			            if (method_call != null)
+			                method_call(data);
+			            else 
+			                result = data;    
+			        } 
+			    });
+			    
+			    return result;
+			} 
 		</script>
 
 	    <title>Foundation | Welcome</title>
@@ -72,6 +94,7 @@
 		    </ul>
 		  </section>
 	</nav>
+	<br />
     {% block content %}{% endblock %}
     </body>
 </html>
