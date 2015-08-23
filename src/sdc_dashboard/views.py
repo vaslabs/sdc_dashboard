@@ -228,7 +228,7 @@ def update_logbook(logbook, data):
 
 
 @csrf_exempt
-def get_logbook_entries(request):
+def get_logbook_entries_api(request):
 	user_details = api_utils.get_skydiver_from_token(request)
 	skydiver = user_details['skydiver']
 	try:
