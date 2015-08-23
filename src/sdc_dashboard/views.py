@@ -5,10 +5,12 @@ from django.http import HttpResponse
 from SDC import settings
 import datetime
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.authtoken.models import Token
+import api_utils
 from django.views.decorators.csrf import csrf_exempt
-from sdc_utils import fetch_logbook
+from sdc_utils import fetch_logbook, fetch_logbook_no_raw
 from datetime import datetime
+from rest_framework.authtoken.models import Token
+
 # Create your views here.
 def index(request):
 	return user_dashboard(request)
@@ -117,16 +119,15 @@ def get_api_token(request):
 
 @csrf_exempt
 def save_session_data(request, format=None):
-	token_key = request.META['HTTP_AUTHORIZATION'].split(' ')[1]
-	token = Token.objects.get(key=token_key)
-	current_user = token.user
+	user_details = api_utils.get_skydiver_from_token(request)
+	current_user = user_details['user']
 	received_json_data=json.loads(request.body)
 	date_submitted = datetime.datetime.now()
 	file_name = current_user.username + str(date_submitted.time()) + '.json'
 	data_file = open(settings.DATA_DIR + "/" + file_name, 'w')
 	data_file.write(json.dumps(received_json_data))
 	data_file.close()
-	skydiver = SkyDiver.objects.get(username=current_user.username)
+	skydiver = user_details['skydiver']
 	sessionData = SessionData(skyDiver=skydiver, submittedDate=date_submitted, location = file_name)
 	sessionData.save()
 	return HttpResponse(json.dumps({'message':'OK', 'code': 200}), content_type="application/json")
@@ -220,8 +221,21 @@ def validateSessionId(sessionId, skydiver):
 
 
 
-
 def update_logbook(logbook, data):
 	logbook.notes = data["notes"]
 	logbook.save()
 	return HttpResponse(json.dumps({"message":"OK"}), content_type="application/json")
+
+
+@csrf_exempt
+def get_logbook_entries(request):
+	user_details = api_utils.get_skydiver_from_token(request)
+	skydiver = user_details['skydiver']
+	try:
+		return_value = fetch_logbook_no_raw(skydiver)
+	except Exception as e:
+		print e
+		return_value = {'error':'Nothing found'}
+
+	return HttpResponse(json.dumps(return_value), content_type="application/json")
+
