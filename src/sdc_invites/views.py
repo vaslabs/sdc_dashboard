@@ -42,3 +42,36 @@ def validate_invitation_token(request):
 	returnValue = {"message":"OK"}
 	return HttpResponse(json.dumps(returnValue), content_type="application/json")
 
+def validate_email(request):
+	email = request.POST['email']
+	isEmailValid = emailValidation(email)
+	users = User.objects.filter(email=email)
+	if (len(users) > 0):
+		returnValue = {"message":"This email is already registered."}
+	else:
+		returnValue = {"message":"OK"}
+	return HttpResponse(json.dumps(returnValue), content_type="application/json")
+
+
+def validate_password(request):
+	password = request.POST['password']
+	returnValue = checkAppropriatePassword(password)
+	return HttpResponse(json.dumps(returnValue), content_type="application/json")
+
+
+def emailValidation(email):
+	from django.core.validators import validate_email
+	from django.core.exceptions import ValidationError
+	try:
+		validate_email( email )
+		return True
+	except ValidationError:
+		return False
+
+
+def checkAppropriatePassword(password):
+	if (len(password) < 8):
+		returnValue = {"message":"Password must be at least 8 characters long"}
+	else:
+		returnValue = {"message":"OK"}
+	return returnValue
