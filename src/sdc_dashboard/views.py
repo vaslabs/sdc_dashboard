@@ -173,7 +173,7 @@ def save_logbook(request):
 
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 	logbook_json = request.POST
-	if (logbook_json["fromRaw"]):
+	if (logbook_json["fromRaw"] == 'true'):
 		return save_first_time_logbook(logbook_json, skydiver)
 	else:
 		return overwrite_logbook(logbook_json, skydiver)
@@ -201,9 +201,17 @@ def save_first_time_logbook(logbook_data, skydiver):
 		print e
 		return HttpResponse(json.dumps({"message":"OOoops!", "code":500}), content_type="application/json")
 
+def overwrite_logbook(logbook_json, skydiver):
+	
+	try:
+		logbook = Logbook.objects.get(skyDiver=skydiver, id=logbook_json['id'])
+	except Exception as e:
+		print e
+		return HttpResponse(json.dumps({'message':'authentication error. Don\'t be sneaky', 'code': 401}), content_type="application/json")
+
+	return update_logbook(logbook, logbook_json)
 
 def validateSessionId(sessionId, skydiver):
-	print skydiver, sessionId
 	try:
 		sessionData = SessionData.objects.get(skyDiver=skydiver, id=sessionId)
 	except:
@@ -212,3 +220,8 @@ def validateSessionId(sessionId, skydiver):
 
 
 
+
+def update_logbook(logbook, data):
+	logbook.notes = data["notes"]
+	logbook.save()
+	return HttpResponse(json.dumps({"message":"OK"}), content_type="application/json")

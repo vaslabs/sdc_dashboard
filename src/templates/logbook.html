@@ -90,7 +90,7 @@
         }
         self.notes = ko.observable(notes);
         self.id = id;
-        self.fromRaw = true;
+        self.fromRaw = fromRaw;
         self.save = function() {
           var logbook_data = {
                          'id':self.id,
