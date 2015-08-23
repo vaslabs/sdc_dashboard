@@ -1,4 +1,4 @@
-$('#invitation-apply').click(function() {
+$('#invitation-apply a').click(function() {
 	var url = '/invites/validate_invitation_token/';
 	var data = {'invitation_token': $('#invitation-token-holder input').val()}
 	getJSONPostResponse(url, data, function(pdata) {next_step(pdata, showUsernameTemplate);});
@@ -25,25 +25,29 @@ function next_step(data, success_callback) {
 function showUsernameTemplate() {
 	constructUI(2, "username", "username");
 	var selectorMap = {'username':'#invitation-username-holder input'};
-	register_click('#invitation-username-apply', '/invites/username/', showEmailTemplate, selectorMap);
+	register_click('#invitation-username-apply a', '/invites/username/', showEmailTemplate, selectorMap);
 }
 
 function showEmailTemplate() {
 	constructUI(3, "email", "email");
 	var selectorMap = {'email':'#invitation-email-holder input'};
-	register_click('#invitation-email-apply', '/invites/email/', showPasswordTemplate, selectorMap);
+	register_click('#invitation-email-apply a', '/invites/email/', showPasswordTemplate, selectorMap);
 
 }
 
 function showPasswordTemplate() {
 	constructUI(4, "password", "password", true);
 	var selectorMap = {'password':'#invitation-password-holder input'};
-	register_click('#invitation-password-apply', '/invites/password/', showValidationPasswordTemplate, selectorMap);
+	register_click('#invitation-password-apply a', '/invites/password/', showValidationPasswordTemplate, selectorMap);
+}
+
+function passwordsMatch() {
+	return $('#invitation-password-holder input').val() == $('#invitation-validationpassword-holder input').val();
 }
 
 function showValidationPasswordTemplate() {
 	constructUI(5, "validationpassword", "Retype password", true);
-	$('#invitation-validationpassword-apply').click(function() {
+	$('#invitation-validationpassword-apply a').click(function() {
 		if (passwordsMatch()) {
 			var url = '/invites/register_user/';
 			var data = {'invitation_token': $('#invitation-token-holder input').val(),
@@ -51,9 +55,13 @@ function showValidationPasswordTemplate() {
 						'password':$('#invitation-password-holder input').val(),
 						'email':$('#invitation-email-holder input').val()};
 			getJSONPostResponse(url, data, function(pdata) {next_step(pdata, showRegistrationSuccessTemplate);});
-		} 
+		}
 	});
 	
+}
+
+function showRegistrationSuccessTemplate() {
+	$('#registration-success').css({'display':'block'});
 }
 
 
