@@ -6,7 +6,6 @@ def fetch_logbook(skydiver):
 	logbookObjects = Logbook.objects.filter(skyDiver=skydiver)
 	logbookEntries = [json.loads(l.__str__()) for l in logbookObjects]
 
-	print logbookEntries
 	sessionEntries = SessionData.objects.filter(skyDiver=skydiver)
 	exclude_list = [logbookObject.sessionData for logbookObject in logbookObjects]
 	selectedSessionEntries = [ sessionEntry for sessionEntry in sessionEntries if sessionEntry not in exclude_list]
@@ -23,3 +22,9 @@ def logbookRawData(sessionEntry):
 	data = data_file.readline()
 	data_file.close()
 	return json.loads(data)
+
+
+def fetch_logbook_no_raw(skydiver):
+	logbookObjects = Logbook.objects.filter(skyDiver=skydiver)
+	logbookEntries = [json.loads(l.__str__()) for l in logbookObjects]
+	return logbookEntries
