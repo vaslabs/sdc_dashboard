@@ -113,6 +113,9 @@ def register_user(request):
 		user = User.objects.create_user(username, email, password)
 		user.save()
 		returnValue = {"message":"OK"}
+		invitation = Invitation.objects.get(token=token)
+		invitation.numberOfInvitesTaken = invitation.numberOfInvitesTaken + 1
+		invitation.save()
 	except Exception as e:
 		print e
 		returnValue = {"message":"Failed to register. Please contact vaslabsco@gmail.com"}
