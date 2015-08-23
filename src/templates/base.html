@@ -14,51 +14,8 @@
 	    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 		<script src="/static/js/sdc_math.js"></script>
 		<script src="/static/js/knockout.js"></script>
+		<script src="/static/js/common.js"></script>
 		<title>{% block title %}Skydiving Companion{% endblock %}</title>
-		<script type="text/javascript">
-			function getJSONResponse(jsurl, method_call) {
-
-			    var result = null;
-
-			    $.ajax({
-			        url: jsurl,
-			        cache: true,
-			        type: 'get',
-			        dataType: 'json',
-			        async: method_call != null,
-			        success: function(data) {
-			            if (method_call != null)
-			                method_call(data);
-			            else 
-			                result = data;    
-			        } 
-			    });
-			    
-			    return result;
-			} 
-
-			function getJSONPostResponse(jsurl, pdata, method_call) {
-
-			    var result = null;
-
-			    $.ajax({
-			        url: jsurl,
-			        cache: true,
-			        type: 'post',
-			        data: pdata,
-			        dataType: 'json',
-			        async: method_call != null,
-			        success: function(data) {
-			            if (method_call != null)
-			                method_call(data);
-			            else 
-			                result = data;    
-			        } 
-			    });
-			    
-			    return result;
-			} 
-		</script>
 
 	    <title>Foundation | Welcome</title>
 	    <link rel="stylesheet" href="/static/css/foundation.css" />
