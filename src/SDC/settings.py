@@ -122,4 +122,4 @@ STATICFILES_DIRS = (
 LOGIN_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
 
-DATA_DIR=os.path.join(BASE_DIR, 'data')
+DATA_DIR=os.path.join(BASE_DIR, '../../../data')
