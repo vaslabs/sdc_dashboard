@@ -16,6 +16,7 @@ function register_click(widget_selector, url, callback, key_inputSelector) {
 
 function next_step(data, success_callback) {
 	if (data.message == 'OK') {
+		$('#invites-error-holder').css('display', 'none');
 		success_callback();
 	} else {
 		showInvalidMessage(data.message);
@@ -49,6 +50,8 @@ function showValidationPasswordTemplate() {
 	constructUI(5, "validationpassword", "Retype password", true);
 	$('#invitation-validationpassword-apply a').click(function() {
 		if (passwordsMatch()) {
+			$('#invites-error-holder').css('display', 'none');
+
 			var url = '/invites/register_user/';
 			var data = {'invitation_token': $('#invitation-token-holder input').val(),
 						'username':$('#invitation-username-holder input').val(),
@@ -65,6 +68,8 @@ function showValidationPasswordTemplate() {
 
 function showRegistrationSuccessTemplate() {
 	$('#registration-success').css({'display':'block'});
+	$('#registration-success div').css({'display':'block'});
+
 }
 
 
@@ -81,6 +86,10 @@ function constructUI(stepIndex, widget_name, placeholder, password) {
 	    class: "small-10 columns"
 	}).appendTo(stepholder);
 	
+	$('#invitation-' + widget_name + '-holder input').change(function() {
+		$('#invites-error-holder').css('display', 'none');
+	});
+
 	jQuery('<input/>', {
 		type: password ? 'password' : 'text',
 		placeholder: placeholder
@@ -96,9 +105,7 @@ function constructUI(stepIndex, widget_name, placeholder, password) {
 		class: 'button postfix',
 		text: 'Go'
 	}).appendTo('#invitation-' + widget_name + '-apply');
-	$('#invitation-' + widget_name + '-apply').click(function() {
-		$('#invites-error-holder').css('display', 'none');
-	});
+	
 	
 }
 
