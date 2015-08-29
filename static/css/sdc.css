@@ -71,3 +71,9 @@ div.logbook-entry {
   position: fixed;
   top: 50%;
 }
+
+a.white {
+  color: white;
+  font-size: 1rem;
+  font-weight: bold; 
+}

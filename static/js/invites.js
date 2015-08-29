@@ -55,7 +55,10 @@ function showValidationPasswordTemplate() {
 						'password':$('#invitation-password-holder input').val(),
 						'email':$('#invitation-email-holder input').val()};
 			getJSONPostResponse(url, data, function(pdata) {next_step(pdata, showRegistrationSuccessTemplate);});
+		} else {
+			showInvalidMessage("Passwords do not match");
 		}
+
 	});
 	
 }
@@ -93,6 +96,14 @@ function constructUI(stepIndex, widget_name, placeholder, password) {
 		class: 'button postfix',
 		text: 'Go'
 	}).appendTo('#invitation-' + widget_name + '-apply');
+	$('#invitation-' + widget_name + '-apply').click(function() {
+		$('#invites-error-holder').css('display', 'none');
+	});
 	
+}
 
+function showInvalidMessage(message) {
+	
+	$('#invites-error-holder').css('display', 'block');
+	$('#invites-error-holder').text(message);
 }
