@@ -122,7 +122,7 @@ def save_session_data(request, format=None):
 	user_details = api_utils.get_skydiver_from_token(request)
 	current_user = user_details['user']
 	received_json_data=json.loads(request.body)
-	date_submitted = datetime.datetime.now()
+	date_submitted = datetime.now()
 	file_name = current_user.username + str(date_submitted.time()) + '.json'
 	data_file = open(settings.DATA_DIR + "/" + file_name, 'w')
 	data_file.write(json.dumps(received_json_data))
