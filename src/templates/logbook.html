@@ -28,16 +28,16 @@
         </div>
         <div class="logbook-details large-12 columns" >
           <div class="small-12 columns">
-            <p>Free fall time: <span data-bind="{text: freefalltime}"></span></p>
+            <p>Free fall time: <span data-bind="{text: freefalltime() + 's'}"></span></p>
           </div>
           <div class="small-12 columns">
-            <p>Exit altitude: <span data-bind="{text: exitAltitude}"></span></p>
+            <p>Exit altitude: <span data-bind="{text: exitAltitude() + 'm'}"></span></p>
           </div>
           <div class="small-12 columns">
-            <p>Deployment altitude: <span data-bind="{text: deploymentAltitude}"></span></p>
+            <p>Deployment altitude: <span data-bind="{text: deploymentAltitude() + 'm'}"></span></p>
           </div>
           <div class="small-12 columns">
-            <p>Max velocity: <span data-bind="{text: maxVelocity}"></span></p>
+            <p>Max velocity: <span data-bind="{text: Math.abs(maxVelocity()*60*60/1000).toFixed(2) + 'km/h'}"></span></p>
           </div>
           <div class="small-12 columns">
             <p>Location: <span data-bind="attr: {id:'session-location-'+number()}, text: location_name"></span></p>

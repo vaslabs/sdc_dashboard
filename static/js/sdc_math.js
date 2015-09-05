@@ -257,11 +257,13 @@ function sort_data(skydiving_session) {
 
 function calculate_metrics(session_data) {
   session_data = sort_data(session_data);
-  var avgBarometerEntries = averageBarometerValues(session_data.barometerEntries, 1000);
-  if (avgBarometerEntries.length == 0 ) {
-      return {'freefalltime':"N/A", 'exitAltitude':"N/A", 'deploymentAltitude':"N/A", 'maxVelocity':"N/A"};
-
+  if (session_data.barometerEntries.length == 0) {
+    return {'freefalltime':"N/A", 'exitAltitude':"N/A", 'deploymentAltitude':"N/A", 'maxVelocity':"N/A"};
   }
+  
+  var avgBarometerEntries = averageBarometerValues(session_data.barometerEntries, 1000);
+  
+  
   var velocities = calculateVerticalVelocityEntries(avgBarometerEntries, 2000);
   var max_speed = findMaximumSpeed(velocities); //logbooked
   var events = identifyFlyingEvents(avgBarometerEntries);  
