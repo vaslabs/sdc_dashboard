@@ -1,38 +1,46 @@
-function calculateVerticalVelocity(data, sample_skip) {
-  var t1, t2, x1, x2;
-  var initialTime = data[0].timestamp;
+function calculateVerticalVelocity(data, time_density) {
   var velocities = [];
+  var initialTime = data[0].timestamp;
   var dx, dt;
-  for (var i = 1; i < data.length - 1; i+=(sample_skip+1)) {
-    t1 = data[i-1].timestamp - initialTime;
-    t2 = data[i].timestamp - initialTime;
-    x1 = data[i-1].altitude;
-    x2 = data[i].altitude;
-    dt = (t2-t1)/1000;
-    dx = (x2-x1);
-    var u = dx/dt;
-    velocities.push([t2/1000, u]);
+  var x1 = data[0].altitude;
+  var x2;
+  var u;
+  var start_timestamp = data[0].timestamp;
+  var end_timestamp = start_timestamp + time_density;
+  for (var i = 1; i < data.length - 1; i+=1) {
+    if (data[i].timestamp > end_timestamp) {
+      x2 = data[i].altitude;
+      u = (x2-x1)/((data[i].timestamp - start_timestamp)/1000);
+      velocities.push([(data[i].timestamp + start_timestamp - (initialTime*2))/2000,u]);
+      start_timestamp = data[i].timestamp;
+      end_timestamp = data[i].timestamp + time_density;
+      x1=x2;
+    }
   }
 
   return velocities;
 
 }
 
-function calculateVerticalVelocityEntries(data, sample_skip) {
-  var t1, t2, x1, x2;
-  var initialTime = data[0].timestamp;
+function calculateVerticalVelocityEntries(data, time_density) {
+
   var velocities = [];
+  var initialTime = data[0].timestamp;
   var dx, dt;
-  velocities.push({timestamp: data[0].timestamp, velocity: 0});
-  for (var i = 1; i < data.length - 1; i+=(sample_skip+1)) {
-    t1 = data[i-1].timestamp - initialTime;
-    t2 = data[i].timestamp - initialTime;
-    x1 = data[i-1].altitude;
-    x2 = data[i].altitude;
-    dt = (t2-t1)/1000;
-    dx = (x2-x1);
-    var u = dx/dt;
-    velocities.push({timestamp: data[i].timestamp, velocity: u});
+  var x1 = data[0].altitude;
+  var x2;
+  var u;
+  var start_timestamp = data[0].timestamp;
+  var end_timestamp = start_timestamp + time_density;
+  for (var i = 1; i < data.length - 1; i+=1) {
+    if (data[i].timestamp > end_timestamp) {
+      x2 = data[i].altitude;
+      u = (x2-x1)/((data[i].timestamp - start_timestamp)/1000);
+      velocities.push({timestamp:(data[i].timestamp + start_timestamp)/2, velocity: u});
+      start_timestamp = data[i].timestamp;
+      end_timestamp = data[i].timestamp + time_density;
+      x1=x2;
+    }
   }
 
   return velocities;
@@ -185,24 +193,37 @@ function findMaximumAltitude(barometerValues, beginFrom) {
 
 
 
-function averageBarometerValues(barometerValues, density) {
-  var avgBarometerEntries = []; 
-  var timestampAvg = 0;
+function averageBarometerValues(barometerValues, density_milliseconds) {
+  
+  var avgBarometerEntries = [];
   var altitudeAvg = 0;
-  for (var i = 0; i < barometerValues.length - density; i+=density) {
-    for (var j = 0; j < density; j++) {
-      timestampAvg += barometerValues[i+j].timestamp/density;
-      altitudeAvg += barometerValues[i+j].altitude/density;
+  var buffer = [barometerValues[0].altitude];
+  var buffer_timestamp = barometerValues[0].timestamp;
+  var end_timestamp = barometerValues[0].timestamp + density_milliseconds;
+  for (var i=0; i < barometerValues.length; i++) {
+    barometerEntry = barometerValues[i];
+    if (barometerEntry.timestamp <= end_timestamp) {
+      buffer.push(barometerEntry.altitude);
+    } else {
+      var buffer_sum = sum(buffer);
+      avgBarometerEntries.push({'altitude':buffer_sum/buffer.length, 'timestamp':((buffer_timestamp + end_timestamp)/2)});
+      buffer = [barometerEntry.altitude];
+      buffer_timestamp = barometerEntry.timestamp;
+      end_timestamp = buffer_timestamp + density_milliseconds;
     }
-    avgBarometerEntries.push({timestamp:timestampAvg, altitude: altitudeAvg});
-    timestampAvg = 0;
-    altitudeAvg = 0;
   }
 
   return avgBarometerEntries;
 
 }
 
+function sum(vector) {
+  var sum_tmp = 0;
+  for (var i = 0; i < vector.length; i++) {
+    sum_tmp += vector[i];
+  }
+  return sum_tmp;
+}
 
 function findMaximumSpeed(velocityEntries) {
   var maxSpeed = null;
@@ -220,13 +241,28 @@ function findMaximumSpeed(velocityEntries) {
   return maxSpeed;
 }
 
+function sort_data(skydiving_session) {
+    var gpsEntries = skydiving_session.gpsEntries;
+    var barometerEntries = skydiving_session.barometerEntries;
+    gpsEntries = gpsEntries.sort(function(entryA, entryB) {
+         return entryA.timestamp - entryB.timestamp;
+    });
+    barometerEntries = barometerEntries.sort(function(entryA, entryB) {
+         return entryA.timestamp - entryB.timestamp;
+    });
+    skydiving_session.barometerEntries = barometerEntries;
+    skydiving_session.gpsEntries = gpsEntries;
+    return skydiving_session;
+}
+
 function calculate_metrics(session_data) {
-  var avgBarometerEntries = averageBarometerValues(session_data.barometerEntries, 1);
+  session_data = sort_data(session_data);
+  var avgBarometerEntries = averageBarometerValues(session_data.barometerEntries, 1000);
   if (avgBarometerEntries.length == 0 ) {
       return {'freefalltime':"N/A", 'exitAltitude':"N/A", 'deploymentAltitude':"N/A", 'maxVelocity':"N/A"};
 
   }
-  var velocities = calculateVerticalVelocityEntries(session_data.barometerEntries, 50);
+  var velocities = calculateVerticalVelocityEntries(avgBarometerEntries, 2000);
   var max_speed = findMaximumSpeed(velocities); //logbooked
   var events = identifyFlyingEvents(avgBarometerEntries);  
   var totalFreeFallTime = (events.canopy.timestamp - events.freefall.timestamp)/1000; //logbooked

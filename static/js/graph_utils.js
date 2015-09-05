@@ -27,16 +27,3 @@ function serialiseEvents(gpsEntries, barometerEntries, gpsCallback, barometerCal
     return event_array;
 }
 
-function sort_data(skydiving_session) {
-    var gpsEntries = skydiving_session.gpsEntries;
-    var barometerEntries = skydiving_session.barometerEntries;
-    gpsEntries = gpsEntries.sort(function(entryA, entryB) {
-         return entryA.timestamp - entryB.timestamp;
-    });
-    barometerEntries = barometerEntries.sort(function(entryA, entryB) {
-         return entryA.timestamp - entryB.timestamp;
-    });
-    skydiving_session.barometerEntries = barometerEntries;
-    skydiving_session.gpsEntries = gpsEntries;
-    return skydiving_session;
-}
