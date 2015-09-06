@@ -136,10 +136,23 @@ function identifyFlyingEvents(barometerEntries) {
   }
 
   function findCanopyEvent(maxSpeed, velocityEntries, index) {
-    
-    if (velocityEntries[index].velocity > maxSpeed.velocity*0.2)
-      return new CanopyEvent(velocityEntries[index].timestamp);
-    return findCanopyEvent(maxSpeed, velocityEntries, index+1);
+    var a, dt, du;
+    var cp;
+    for (var i = index+1; i < velocityEntries.length; i++) {
+      du = velocityEntries[i].velocity - velocityEntries[i-1].velocity;
+      dt = velocityEntries[i].timestamp - velocityEntries[i-1].timestamp;
+      dt=dt/1000;
+      a = du/dt;
+      
+      if (a > 10) {
+        cp = new CanopyEvent(velocityEntries[i].timestamp);
+        for (var j = i+1; j < velocityEntries.length; j++) {
+          if (velocityEntries[j].velocity > -30 && velocityEntries[j] < 0)
+            return new CanopyEvent(velocityEntries[j].timestamp);
+        }
+      }
+    }
+    return cp;
   }
 
   function findLandedEvent(berometerEntries, index) {
@@ -176,16 +189,49 @@ function identifyFlyingEvents(barometerEntries) {
   return events
 
 }
-
+var GRAVITY_ACCELERATION = 9.8;
 function findMaximumAltitude(barometerValues, beginFrom) {
-  var maxBarometerEntry = barometerValues[beginFrom];
-  maxBarometerEntry['index'] = beginFrom;
-  for (var i = beginFrom + 1; i < barometerValues.length; i++) {
-    if (barometerValues[i].altitude > maxBarometerEntry.altitude) {
-      maxBarometerEntry = barometerValues[i];
-      maxBarometerEntry.index = i;
+    var maxBarometerEntry = barometerValues[beginFrom];
+    maxBarometerEntry['index'] = beginFrom;
+    for (var i = beginFrom + 1; i < barometerValues.length; i++) {
+      if (barometerValues[i].altitude > maxBarometerEntry.altitude) {
+        maxBarometerEntry = barometerValues[i];
+        maxBarometerEntry.index = i;
+      }
     }
-  }
+
+    //find continuous accelleration
+    var index = maxBarometerEntry.index + 1;
+    var bv2 = barometerValues[index];
+    var bv1 = barometerValues[index-1];
+
+    var speed_1 = (bv2.altitude - bv1.altitude)/((bv2.timestamp - bv1.timestamp)/1000);
+    var t_1 = bv2.timestamp;
+    var t_2;
+    var dt;
+    var du;
+    var speed_2;
+    var persists = 0;
+    for (var i = index + 1; i < barometerValues.length; i++) {
+      bv2 = barometerValues[i];
+      bv1 = barometerValues[i-1];
+      speed_2 = (bv2.altitude - bv1.altitude)/((bv2.timestamp - bv1.timestamp)/1000);
+      t_2 = bv2.timestamp;
+      dt = (t_2 - t_1)/1000;
+      du = speed_2 - speed_1;
+      var accelleration = du/dt;
+      var acc_diff = GRAVITY_ACCELERATION + accelleration;
+      if (acc_diff < 3) {
+        if (persists >= 3) {
+          maxBarometerEntry = barometerValues[i-1];
+          maxBarometerEntry.index = i-1;
+          return maxBarometerEntry;
+        } else {persists++}
+      } else {
+        persists = 0;
+      }
+      t_1 = t_2;
+    }
 
     return maxBarometerEntry;
 }
