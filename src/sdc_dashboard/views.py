@@ -54,7 +54,7 @@ def share_latest_dive(request):
 		return HttpResponse(json.dumps({'message':'authentication error', 'code': 401}), content_type="application/json")
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 	linkId = id_generator()
-	expiryDate = datetime.datetime.now() + datetime.timedelta(days=5)
+	expiryDate = datetime.now() + datetime.timedelta(days=5)
 	sharelink = ShareLink(shareLink=linkId, userShared=skydiver, expires=expiryDate)
 	try:
 		sharelink.save()
