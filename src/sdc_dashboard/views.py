@@ -3,12 +3,11 @@ from .models import SkyDiver, SessionData, ShareLink, Location, Logbook
 import json, string, random
 from django.http import HttpResponse
 from SDC import settings
-import datetime
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import api_utils
 from django.views.decorators.csrf import csrf_exempt
 from sdc_utils import fetch_logbook, fetch_logbook_no_raw
-from datetime import datetime
+import datetime
 from rest_framework.authtoken.models import Token
 
 # Create your views here.
@@ -54,7 +53,7 @@ def share_latest_dive(request):
 		return HttpResponse(json.dumps({'message':'authentication error', 'code': 401}), content_type="application/json")
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 	linkId = id_generator()
-	expiryDate = datetime.now() + datetime.timedelta(days=5)
+	expiryDate = datetime.datetime.now() + datetime.timedelta(days=5)
 	sharelink = ShareLink(shareLink=linkId, userShared=skydiver, expires=expiryDate)
 	try:
 		sharelink.save()
@@ -122,7 +121,7 @@ def save_session_data(request, format=None):
 	user_details = api_utils.get_skydiver_from_token(request)
 	current_user = user_details['user']
 	received_json_data=json.loads(request.body)
-	date_submitted = datetime.now()
+	date_submitted = datetime.datetime.now()
 	file_name = current_user.username + str(date_submitted.time()) + '.json'
 	data_file = open(settings.DATA_DIR + "/" + file_name, 'w')
 	data_file.write(json.dumps(received_json_data))
@@ -191,7 +190,7 @@ def save_first_time_logbook(logbook_data, skydiver):
 	except:
 		location = Location(latitude=logbook_data['latitude'], longitude=logbook_data['longitude'], name=logbook_data['location_name'])
 		location.save()
-	dateOfSession = datetime.fromtimestamp(int(logbook_data['date'])/1000)
+	dateOfSession = datetime.datetime.fromtimestamp(int(logbook_data['date'])/1000)
 	logbook = Logbook(skyDiver=skydiver, sessionData=sessionData, location=location, freeFallTime=logbook_data['freefalltime'], \
 		exitAltitude=logbook_data['exitAltitude'], deploymentAltitude=logbook_data['deploymentAltitude'], maxVerticalVelocity=logbook_data['maxVerticalVelocity'],\
 		date=dateOfSession, notes=logbook_data['notes'])
