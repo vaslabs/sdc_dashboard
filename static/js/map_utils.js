@@ -45,6 +45,7 @@ function startAnimating(data) {
 function drawPath(data) {
   var gpsEntries = data.gpsEntries;
   var altitudeEntries = data.barometerEntries;
+  altitudeEntries = averageBarometerValues(altitudeEntries, 1000);
   var skyDivingEvents = null;
   if (altitudeEntries.length > 0)
     skyDivingEvents = identifyFlyingEvents(altitudeEntries);
@@ -218,8 +219,10 @@ var skyDivingEvents = null;
 function prepareEvents(gpsEntries, altitudeEntries) {
 
   $('#status-image').attr("src", walkImg);
+
   serialisedEvents = serialiseEvents(gpsEntries, altitudeEntries);
   var previousTimestamp = serialisedEvents[0].timestamp;
+  altitudeEntries = averageBarometerValues(altitudeEntries, 1000);
 
   skyDivingEvents = identifyFlyingEvents(altitudeEntries);
   

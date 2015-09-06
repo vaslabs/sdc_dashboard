@@ -146,9 +146,11 @@ function identifyFlyingEvents(barometerEntries) {
       
       if (a > 10) {
         cp = new CanopyEvent(velocityEntries[i].timestamp);
+        cp.index = i;
         for (var j = i+1; j < velocityEntries.length; j++) {
           if (velocityEntries[j].velocity > -30 && velocityEntries[j] < 0)
-            return new CanopyEvent(velocityEntries[j].timestamp);
+            cp = new CanopyEvent(velocityEntries[j].timestamp);
+            cp.index = j;
         }
       }
     }
@@ -185,7 +187,7 @@ function identifyFlyingEvents(barometerEntries) {
 
   events.canopy = findCanopyEvent(maximumSpeed, velocityEntries, maximumSpeed.index); 
   
-  events.landed = findLandedEvent(barometerEntries, maximumAltitude.index);
+  events.landed = findLandedEvent(barometerEntries, events.canopy.index);
   return events
 
 }
