@@ -312,7 +312,7 @@ function calculate_metrics(session_data) {
   var avgBarometerEntries = averageBarometerValues(session_data.barometerEntries, 1000);
   
   
-  var velocities = calculateVerticalVelocityEntries(avgBarometerEntries, 2000);
+  var velocities = calculateVerticalVelocityEntries(avgBarometerEntries, 8000);
   var max_speed = findMaximumSpeed(velocities); //logbooked
   var events = identifyFlyingEvents(avgBarometerEntries);  
   var totalFreeFallTime = (events.canopy.timestamp - events.freefall.timestamp)/1000; //logbooked

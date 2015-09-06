@@ -25,7 +25,7 @@
         json_data = sort_data(json_data);
         myBarometerData = json_data["barometerEntries"];
         myBarometerData = averageBarometerValues(myBarometerData, 1000);
-        myVerticalVelocityDataRows = calculateVerticalVelocity(myBarometerData, 2000);
+        myVerticalVelocityDataRows = calculateVerticalVelocity(myBarometerData, 8000);
         drawBarometerChart();
         drawVerticalVelocityChart();
       }
