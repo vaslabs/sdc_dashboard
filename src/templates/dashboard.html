@@ -25,6 +25,7 @@
         if (logBookPresent >= 0 && logBookPresent < currentURLParts.length - 1) {
           sessionId = currentURLParts[logBookPresent+1];
           url += "/" + sessionId;
+          $("a#charts").attr({'href':'/dashboard/graphs/'+sessionId});
         }
 
         getJSONResponse(url, initialize);
@@ -104,7 +105,7 @@
             <div id="animation-button" class="medium-12 columns medium semi-round button"><i class="step fi-play size-24"></i>Movie</div>
           </div>
           <div class="medium-12 columns">
-            <a href="/dashboard/graphs" class="medium-12 columns medium semi-round button"><i class="step fi-graph-trend size-24"></i>Stats</a>
+            <a id='charts' href="/dashboard/graphs" class="medium-12 columns medium semi-round button"><i class="step fi-graph-trend size-24"></i>Stats</a>
           </div>
           <div class="medium-12 columns">
             <div id="real-speed-button" class="medium-6 small-12 columns">

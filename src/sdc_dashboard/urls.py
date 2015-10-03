@@ -11,6 +11,7 @@ urlpatterns = [
  	url(r'^session$', views.get_user_data, name='session'),
     url(r'^session/(?P<sessionNo>\d)$', views.get_user_data, name='sp_session'),
  	url(r'^graphs$', views.load_user_graphs, name='graphs'),
+    url(r'^graphs/(?P<sessionNo>\d)$', views.load_user_graphs, name='sp_graphs'),
     url(r'^share$', views.share_latest_dive, name='session_share'),
     url(r'^shared_session/(?P<linkid>\w{16})', views.get_shared_session, name='shared_session'),
     url(r'^shared_session/l/(?P<linkid>\w{16})', views.view_shared_session, name='view_shared_session'),
