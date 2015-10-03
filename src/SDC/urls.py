@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
+from sdc_dashboard import views
 urlpatterns = [
     url(r'^dashboard/', include('sdc_dashboard.urls')),
     url(r'^logbook/', include('sdc_dashboard.logbook_urls')),
@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^$', include('sdc_dashboard.urls')), 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', 'django.contrib.auth.views.login', name='login', kwargs={'template_name': 'registration/login.html'}),
+    url(r'^account/$', views.account_management, name='account_management'),
     url(r'^change-password/$', 'django.contrib.auth.views.password_change', {'template_name': 'registration/password_change_form.html'}, name="password-change"),
     url(r'^change-password/done/$', 'django.contrib.auth.views.password_change_done', {'template_name': 'registration/password_change_done.html'}, name="password-change-done"),
     url(r'^logout/$', 'django.contrib.auth.views.logout', name='logout', kwargs={'template_name': 'registration/logout.html'}),
