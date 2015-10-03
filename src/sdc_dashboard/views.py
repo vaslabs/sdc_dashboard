@@ -238,3 +238,10 @@ def get_logbook_entries_api(request):
 
 	return HttpResponse(json.dumps(return_value), content_type="application/json")
 
+
+
+def account_management(request):
+	current_user = request.user
+	if (not current_user.is_authenticated()):
+		return redirect('/login')
+	return render(request, 'ui_management.html')
