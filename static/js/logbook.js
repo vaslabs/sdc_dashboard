@@ -73,7 +73,7 @@ function initialize(session_data) {
     }
 
     sessions = sessions.sort(function(a,b) {
-      return -a.timestamp + b.timestamp;
+      return a.id - b.id;
     });
 
   }
