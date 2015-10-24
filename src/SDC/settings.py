@@ -123,3 +123,13 @@ LOGIN_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
 
 DATA_DIR=os.path.join(BASE_DIR, '../../../data')
+
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'sendgrid_username'
+EMAIL_HOST_PASSWORD = 'sendgrid_password'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_BACKEND = "sgbackend.SendGridBackend"
+SENDGRID_API_KEY = "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"
