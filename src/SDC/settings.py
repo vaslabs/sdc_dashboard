@@ -133,3 +133,6 @@ EMAIL_USE_TLS = True
 
 EMAIL_BACKEND = "sgbackend.SendGridBackend"
 SENDGRID_API_KEY = "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"
+
+
+IS_BETA=True
