@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from .models import Invitation
+from .models import Invitation, ActivationToken
 import json
 from django.http import HttpResponse
 from datetime import datetime
+from email_manager.utils import send_registration_email
 # Create your views here.
 ERROR_USERNAME_EXISTS = 5000
 ERROR_INVALID_TOKEN = 4000
@@ -116,6 +117,9 @@ def register_user(request):
 		invitation = Invitation.objects.get(token=token)
 		invitation.numberOfInvitesTaken = invitation.numberOfInvitesTaken + 1
 		invitation.save()
+		activationToken = createActivationToken(username, email, user)
+		activationToken.save()
+		send_registration_email(email, activationToken.token)
 	except Exception as e:
 		print e
 		returnValue = {"message":"Failed to register. Please contact vaslabsco@gmail.com"}
@@ -123,4 +127,9 @@ def register_user(request):
 	return HttpResponse(json.dumps(returnValue), content_type="application/json")
 
 
-
+import md5
+def createActivationToken(username, email, user):
+	m = md5.new()
+	m.update(username)
+	m.update(email)
+	return ActivationToken(token=m.hexdigest(), user=user)
