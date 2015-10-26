@@ -25,4 +25,4 @@ class ActivationToken(models.Model):
 		if not self.id:
 			self.createdDate = datetime.now().replace(tzinfo=None)
 			self.activated = False
-			super(ActivationToken, self).save()
+		super(ActivationToken, self).save()
