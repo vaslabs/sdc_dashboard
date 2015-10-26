@@ -10,10 +10,10 @@ def send_registration_email(email, activation_token):
 
 	mail = EmailMultiAlternatives(
 	  subject="Skydiver.Ninja account activation",
-	  body='Activate your account <a href="https://dashboard.skydiver.ninja/activate/' + activation_token + '">here</a>',
 	  from_email="Skydiver.Ninja No-reply <no-reply@skydiver.ninja>",
 	  to=[email]
 	)
+	mail.attach_alternative('Activate your account <a href="https://dashboard.skydiver.ninja/activate/' + activation_token + '">here</a>', "text/html")
 
 	mail.send()
 
