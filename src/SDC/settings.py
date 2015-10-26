@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '$4poed8jbu5ulmqvv9yk#2catffzwanwma_jzi7pi@=%i9qnf*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -113,11 +113,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-STATIC_ROOT=BASE_DIR+'/../'
+STATIC_ROOT=BASE_DIR+'wsgi/static/'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    STATIC_ROOT + "static",
-)
 
 LOGIN_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
