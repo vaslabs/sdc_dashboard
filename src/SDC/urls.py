@@ -17,6 +17,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from sdc_dashboard import views
+from email_manager.views import activate_account
+
 urlpatterns = [
     url(r'^dashboard/', include('sdc_dashboard.urls')),
     url(r'^logbook/', include('sdc_dashboard.logbook_urls')),
@@ -29,6 +31,7 @@ urlpatterns = [
     url(r'^change-password/done/$', 'django.contrib.auth.views.password_change_done', {'template_name': 'registration/password_change_done.html'}, name="password-change-done"),
     url(r'^logout/$', 'django.contrib.auth.views.logout', name='logout', kwargs={'template_name': 'registration/logout.html'}),
     url('^', include('django.contrib.auth.urls')),
+    url(r'^activate/(?P<token>\w{32})', activate_account, name='activate_account'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
