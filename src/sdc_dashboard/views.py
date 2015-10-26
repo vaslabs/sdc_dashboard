@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from sdc_utils import fetch_logbook, fetch_logbook_no_raw
 import datetime
 from rest_framework.authtoken.models import Token
+from django.views.decorators.cache import cache_page
 
 # Create your views here.
 def index(request):
@@ -21,7 +22,7 @@ def user_dashboard(request, sessionNo=0):
 		return redirect('/login')
 	return render(request, 'dashboard.html')
 
-
+@cache_page(60 * 15)
 def get_user_data(request, sessionNo=-1):
 	current_user = request.user
 	if (not current_user.is_authenticated()):
@@ -42,6 +43,7 @@ def get_user_data(request, sessionNo=-1):
 	data = data_file.readline()
 	data_file.close()
 	return HttpResponse(data, content_type="application/json")
+
 
 def load_user_graphs(request, sessionNo=-1):
 	current_user = request.user
@@ -85,7 +87,7 @@ def get_shared_session(request, linkid):
 		return_value = {"error":"500"}
 		return HttpResponse(json.dumps(return_value), content_type="application/json")
 
-
+@cache_page(60 * 15)
 def get_user_sessions(request):
 	current_user = request.user
 	if (not current_user.is_authenticated()):
@@ -142,6 +144,7 @@ def get_qrcode_api(request):
 def get_demo_page(request):
 	return render(request, 'demo.html')
 
+@cache_page(60 * 15)
 def get_demo_data(request):
 	return_value = {}
 	try:
@@ -154,7 +157,7 @@ def get_demo_data(request):
 		return HttpResponse(json.dumps(return_value), content_type="application/json")	
 
 
-
+@cache_page(60 * 15)
 def get_logbook_entries(request):
 	current_user = request.user
 	if (not current_user.is_authenticated()):
