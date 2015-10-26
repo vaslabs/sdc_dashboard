@@ -30,6 +30,8 @@ def get_user_data(request, sessionNo=-1):
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 	
 	sessionData = SessionData.objects.filter(skyDiver=skydiver)
+	if (len(sessionData) == 0):
+		return HttpResponse("[]", content_type="application/json")
 	try:
 		sessionNo = int(sessionNo)
 	except:
