@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
+    'captcha_admin',
+    'captcha',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,8 +43,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'sdc_dashboard',
     'sdc_invites',
-    'captcha_admin',
-    'captcha'
+
 )
 
 MIDDLEWARE_CLASSES = (
