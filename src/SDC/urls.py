@@ -18,7 +18,8 @@ from captcha_admin import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from sdc_dashboard import views
 from email_manager.views import activate_account
-admin.autodiscover()
+
+
 urlpatterns = [
     url(r'^dashboard/', include('sdc_dashboard.urls')),
     url(r'^logbook/', include('sdc_dashboard.logbook_urls')),
