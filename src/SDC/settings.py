@@ -40,7 +40,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'sdc_dashboard',
-    'sdc_invites'
+    'sdc_invites',
+    'captcha_admin',
+    'captcha'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -133,3 +135,9 @@ SENDGRID_API_KEY = "SG.oFw2_aVBRt-kkyFqZ9BHXw.DJ7Exjhg34cPPT-9svaPm1akEnRWDjoD5S
 
 
 IS_BETA=True
+
+
+RECAPTCHA_PUBLIC_KEY = '6Ldm1A8TAAAAAIvVE9so7Zw4V2WXQnJm8QozN0W6'
+
+RECAPTCHA_PRIVATE_KEY = '6Ldm1A8TAAAAAPXU8CyefT1hESe2SFo56P31j_U8'
+RECAPTCHA_USE_SSL = True
