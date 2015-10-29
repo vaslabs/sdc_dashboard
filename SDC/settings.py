@@ -16,18 +16,26 @@ from django.core.urlresolvers import reverse_lazy
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+ON_PAAS = 'OPENSHIFT_REPO_DIR' in os.environ
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '$4poed8jbu5ulmqvv9yk#2catffzwanwma_jzi7pi@=%i9qnf*'
+if ON_PAAS:
+    SECRET_KEY = os.environ['OPENSHIFT_SECRET_TOKEN']
+else:
+    SECRET_KEY = '$4poed8jbu5ulmqvv9yk#2catffzwanwma_jzi7pi@=%i9qnf*'
+DEBUG = not ON_PAAS
+DEBUG = DEBUG or os.getenv("debug","false").lower() == "true"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if ON_PAAS and DEBUG:
+    print("*** Warning - Debug mode is on ***")
 
-ALLOWED_HOSTS = ['*']
-
+if ON_PAAS:
+    ALLOWED_HOSTS = [os.environ['OPENSHIFT_APP_DNS'], socket.gethostname()]
+else:
+    ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -115,14 +123,25 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.8/howto/static-files/
-STATIC_ROOT=BASE_DIR+'/wsgi/static/'
+# https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'wsgi','static')
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
+
+STATICFILES_DIRS = (
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(BASE_DIR,"static"),
+)
 
 LOGIN_URL = reverse_lazy('login')
 LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
 
-DATA_DIR=os.path.join(BASE_DIR, '../../../data')
+DATA_DIR=os.path.join(BASE_DIR, '../../data')
 
 
 EMAIL_HOST = 'smtp.sendgrid.net'
