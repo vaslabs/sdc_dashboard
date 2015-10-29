@@ -18,6 +18,8 @@ from captcha_admin import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from sdc_dashboard import views
 from email_manager.views import activate_account
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 urlpatterns = [
@@ -34,5 +36,7 @@ urlpatterns = [
     url('^', include('django.contrib.auth.urls')),
     url(r'^activate/(?P<token>\w{32})', activate_account, name='activate_account'),
 ]
-
-urlpatterns += staticfiles_urlpatterns()
+print settings.DEBUG
+print static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
