@@ -6,7 +6,7 @@ from SDC import settings
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import api_utils
 from django.views.decorators.csrf import csrf_exempt
-from sdc_utils import fetch_logbook, fetch_logbook_no_raw
+from sdc_utils import fetch_logbook, fetch_logbook_no_raw, fetch_mysessions
 import datetime
 from rest_framework.authtoken.models import Token
 from django.views.decorators.cache import cache_page
@@ -30,7 +30,7 @@ def get_user_data(request, sessionNo=-1):
 
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 	
-	sessionData = SessionData.objects.filter(skyDiver=skydiver)
+	sessionData = fetch_mysessions(skydiver)
 	if (len(sessionData) == 0):
 		return HttpResponse("[]", content_type="application/json")
 	try:
@@ -94,7 +94,7 @@ def get_user_sessions(request):
 		return HttpResponse(json.dumps({'message':'authentication error', 'code': 401}), content_type="application/json")
 
 	skydiver = SkyDiver.objects.get(username=current_user.username)
-	sessionData = SessionData.objects.filter(skyDiver=skydiver)
+	sessionData = fetch_mysessions(skyDiver=skydiver)
 	sessions = [];
 	for session in sessionData:
 		data_file = open(settings.DATA_DIR + "/" + session.location)
@@ -166,7 +166,13 @@ def get_logbook_entries(request):
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 
 	return_value = fetch_logbook(skydiver)
+
+	return_value.sort(key=lambda x: key_function_timestamp)
 	return HttpResponse(json.dumps(return_value), content_type="application/json")
+
+def key_function_timestamp(x):
+	timestampX = x['timestamp'] if type(x) is dict else x.timestamp
+	return timestampX;
 
 @csrf_exempt
 def save_logbook(request):
@@ -198,7 +204,7 @@ def save_first_time_logbook(logbook_data, skydiver):
 	dateOfSession = datetime.datetime.fromtimestamp(int(logbook_data['date'])/1000)
 	logbook = Logbook(skyDiver=skydiver, sessionData=sessionData, location=location, freeFallTime=logbook_data['freefalltime'], \
 		exitAltitude=logbook_data['exitAltitude'], deploymentAltitude=logbook_data['deploymentAltitude'], maxVerticalVelocity=logbook_data['maxVerticalVelocity'],\
-		date=dateOfSession, notes=logbook_data['notes'])
+		date=dateOfSession, notes=logbook_data['notes'], timestamp=sessionData.timestamp)
 	try:
 		logbook.save()
 		return HttpResponse(json.dumps({"message":"OK"}), content_type="application/json")
