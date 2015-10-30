@@ -41,7 +41,7 @@ class Logbook(models.Model):
     maxVerticalVelocity = models.FloatField()
     date = models.DateTimeField("date of session")
     notes = models.CharField(max_length=1024)
-
+    timestamp = models.DecimalField(max_digits=16, decimal_places=0, default=0)
     def __str__(self):
         json_signature = {'id':self.id,\
                             'metrics':{\

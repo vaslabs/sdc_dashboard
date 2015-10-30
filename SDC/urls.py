@@ -36,7 +36,5 @@ urlpatterns = [
     url('^', include('django.contrib.auth.urls')),
     url(r'^activate/(?P<token>\w{32})', activate_account, name='activate_account'),
 ]
-print settings.DEBUG
-print static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

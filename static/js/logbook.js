@@ -72,8 +72,20 @@ function initialize(session_data) {
       sessions.push(ss);
     }
 
-    sessions = sessions.sort(function(a,b) {
-      return -a.timestamp + b.timestamp;
+    sessions.sort(function(a,b) {
+      if ('timestamp' in a)
+        timestampA = a.timestamp;
+      else
+        timestampA = a.timeInMillis;
+      if ('timestamp' in b)
+        timestampB = b.timestamp;
+      else
+        timestampB = b.timeInMillis;
+      return -timestampA + timestampB;
+    });
+    $.each(sessions(), function(index, session) {
+      console.log(session);
+      session.number(sessions().length - 1 - index);
     });
 
   }
