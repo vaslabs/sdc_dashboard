@@ -6,7 +6,7 @@ from SDC import settings
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 import api_utils
 from django.views.decorators.csrf import csrf_exempt
-from sdc_utils import fetch_logbook, fetch_logbook_no_raw
+from sdc_utils import fetch_logbook, fetch_logbook_no_raw, fetch_mysessions
 import datetime
 from rest_framework.authtoken.models import Token
 from django.views.decorators.cache import cache_page
@@ -30,7 +30,7 @@ def get_user_data(request, sessionNo=-1):
 
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 	
-	sessionData = SessionData.objects.filter(skyDiver=skydiver)
+	sessionData = fetch_mysessions(skydiver)
 	if (len(sessionData) == 0):
 		return HttpResponse("[]", content_type="application/json")
 	try:
@@ -94,7 +94,7 @@ def get_user_sessions(request):
 		return HttpResponse(json.dumps({'message':'authentication error', 'code': 401}), content_type="application/json")
 
 	skydiver = SkyDiver.objects.get(username=current_user.username)
-	sessionData = SessionData.objects.filter(skyDiver=skydiver)
+	sessionData = fetch_mysessions(skyDiver=skydiver)
 	sessions = [];
 	for session in sessionData:
 		data_file = open(settings.DATA_DIR + "/" + session.location)
@@ -166,6 +166,8 @@ def get_logbook_entries(request):
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 
 	return_value = fetch_logbook(skydiver)
+	print return_value
+	return_value = sorted(return_value, key=lambda x: x['timestamp'])
 	return HttpResponse(json.dumps(return_value), content_type="application/json")
 
 @csrf_exempt
