@@ -67,13 +67,25 @@ function initialize(session_data) {
       var date = new Date(session_data[i].timeInMillis)
       var metrics = session_data[i].metrics;
       var location = {lat: session_data[i].latitude, lng: session_data[i].longitude};
-      var ss = new SkydivingSession(date, session_data.length - 1 - i, metrics, location, session_data[i].location, session_data[i].notes, session_data[i].id, false)
+      var ss = new SkydivingSession(date, i, metrics, location, session_data[i].location, session_data[i].notes, session_data[i].id, false)
       ss.timestamp = session_data[i].timeInMillis;
       sessions.push(ss);
     }
 
-    sessions = sessions.sort(function(a,b) {
-      return -a.timestamp + b.timestamp;
+    sessions.sort(function(a,b) {
+      if ('timestamp' in a)
+        timestampA = a.timestamp;
+      else
+        timestampA = a.timeInMillis;
+      if ('timestamp' in b)
+        timestampB = b.timestamp;
+      else
+        timestampB = b.timeInMillis;
+      return -timestampA + timestampB;
+    });
+    $.each(sessions(), function(index, session) {
+      console.log(session);
+      session.number(sessions().length - 1 - index);
     });
 
   }

@@ -20,7 +20,7 @@
     </script>
     <script type="text/html" id="session-details-template">
       <div class="large-6 medium-12 columns logbook-entry" data-bind="css: {leftalign: number%2==0}">
-        <div class="large-12 columns" data-bind="attr: {id: number}" >
+        <div class="large-12 columns" data-bind="attr: {id: number()}" >
           <div class="small-12 columns">
             <h3 class="session_id"><a data-bind="{attr: {href: '/dashboard/logbook/' + number()}, text: '#' + number()}"></a></h3>
             <p class="datetime" data-bind="text: date"></p>

@@ -5,6 +5,6 @@
 *~
 .project
 .pydevproject
-src/sdc_dashboard/migrations/
+sdc_dashboard/migrations/
 wsgi/*/
 wsgi/*.*
