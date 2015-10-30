@@ -84,7 +84,6 @@ function initialize(session_data) {
       return -timestampA + timestampB;
     });
     $.each(sessions(), function(index, session) {
-      console.log(session);
       session.number(sessions().length - 1 - index);
     });
 
