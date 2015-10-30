@@ -166,9 +166,13 @@ def get_logbook_entries(request):
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 
 	return_value = fetch_logbook(skydiver)
-	print return_value
-	return_value = sorted(return_value, key=lambda x: x['timestamp'])
+
+	return_value.sort(key=lambda x: key_function_timestamp)
 	return HttpResponse(json.dumps(return_value), content_type="application/json")
+
+def key_function_timestamp(x):
+	timestampX = x['timestamp'] if type(x) is dict else x.timestamp
+	return timestampX;
 
 @csrf_exempt
 def save_logbook(request):
@@ -200,7 +204,7 @@ def save_first_time_logbook(logbook_data, skydiver):
 	dateOfSession = datetime.datetime.fromtimestamp(int(logbook_data['date'])/1000)
 	logbook = Logbook(skyDiver=skydiver, sessionData=sessionData, location=location, freeFallTime=logbook_data['freefalltime'], \
 		exitAltitude=logbook_data['exitAltitude'], deploymentAltitude=logbook_data['deploymentAltitude'], maxVerticalVelocity=logbook_data['maxVerticalVelocity'],\
-		date=dateOfSession, notes=logbook_data['notes'])
+		date=dateOfSession, notes=logbook_data['notes'], timestamp=sessionData.timestamp)
 	try:
 		logbook.save()
 		return HttpResponse(json.dumps({"message":"OK"}), content_type="application/json")

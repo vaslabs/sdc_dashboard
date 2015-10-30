@@ -5,8 +5,8 @@ import json
 def fetch_logbook(skydiver):
 	logbookObjects = Logbook.objects.filter(skyDiver=skydiver)
 	logbookEntries = [json.loads(l.__str__()) for l in logbookObjects]
+	sessionEntries = SessionData.objects.filter(skyDiver=skydiver)
 
-	sessionEntries = fetch_mysessions(skydiver)
 	exclude_list = [logbookObject.sessionData for logbookObject in logbookObjects]
 	selectedSessionEntries = [ sessionEntry for sessionEntry in sessionEntries if sessionEntry not in exclude_list]
 
@@ -35,7 +35,6 @@ def fetch_mysessions(skydiver):
 def normaliseSessionEntry(sessionEntry):
 	if (sessionEntry.timestamp == 0):
 		raw_data = logbookRawData(sessionEntry)
-		print raw_data['gpsEntries']
 		if ('gpsEntries' in raw_data and len(raw_data['gpsEntries']) > 0):
 			sessionEntry.timestamp = raw_data['gpsEntries'][0]['timestamp']
 		else:
