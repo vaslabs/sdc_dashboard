@@ -9,7 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from sdc_utils import fetch_logbook, fetch_logbook_no_raw, fetch_mysessions
 import datetime
 from rest_framework.authtoken.models import Token
-from django.views.decorators.cache import cache_page
 
 # Create your views here.
 def index(request):
