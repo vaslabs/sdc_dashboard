@@ -65,7 +65,24 @@ $(document).ready(function() {
    $('#simple-menu').sidr({
       side: 'right',
       name: 'map-menu',
-
    });
-   
+
+   $('#map-menu').swipe( {
+            //Generic swipe handler for all directions
+            swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
+              if (direction == "right") {
+                $.sidr('close', 'map-menu');
+                toggle=true;
+              }
+            }
+          });
 });
+
+var toggle = true;
+function showMapMenu() {
+  if (toggle)
+    $.sidr('open', 'map-menu');
+  else
+    $.sidr('close', 'map-menu');
+  toggle=!toggle;
+}
