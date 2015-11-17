@@ -86,6 +86,10 @@ i.size-64 {
   font-size: 64px;
 }
 
+i.size-56 {
+  font-size: 56px;
+}
+
 .noPadding {
   padding: 0px;
 }
