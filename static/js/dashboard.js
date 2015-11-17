@@ -63,6 +63,9 @@ function setUpControlPanel() {
 
 $(document).ready(function() {
    $('#simple-menu').sidr({
-      side: 'right'
+      side: 'right',
+      name: 'map-menu',
+
    });
+   
 });
