@@ -82,6 +82,10 @@ i.size-72 {
   font-size: 72px;
 }
 
+i.size-64 {
+  font-size: 64px;
+}
+
 .noPadding {
   padding: 0px;
 }
@@ -92,6 +96,10 @@ i.black {
 
 i.black.hoverable {
   color:lightgrey;
+}
+
+i.black.smooth {
+  color: rgba(0, 0, 0, 0.5);
 }
 
 i.black.hoverable:hover {
