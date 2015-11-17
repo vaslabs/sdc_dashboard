@@ -95,7 +95,14 @@ function initialize(session_data) {
 
 var model;
 function prepareUI(sessions) {
-   model = {"sessions":sessions};
+   model = {
+      "sessions":sessions,
+      navigateTo: function(session) {
+        $.sidr('close', 'session-menu');
+        $("html, body").animate({ scrollTop: $('#' + session.number()).offset().top }, 1000);
+      }
+
+   };
    ko.applyBindings(model);
 }
 
@@ -105,4 +112,23 @@ function getMyData() {
 
 $(function() {
   getMyData();
+});
+
+$(document).ready(function() {
+   $('#session-sidr').sidr({
+      side: 'right',
+      name: 'session-menu',
+
+   });
+   
+   $('#session-menu').swipe( {
+            //Generic swipe handler for all directions
+            swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
+              if (direction == "right") {
+                $.sidr('close', 'session-menu');
+
+              }
+            }
+          });
+
 });
