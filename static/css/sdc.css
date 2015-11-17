@@ -77,3 +77,23 @@ a.white {
   font-size: 1rem;
   font-weight: bold; 
 }
+
+i.size-72 {
+  font-size: 72px;
+}
+
+.noPadding {
+  padding: 0px;
+}
+
+i.black {
+  color: black;
+}
+
+i.black.hoverable {
+  color:lightgrey;
+}
+
+i.black.hoverable:hover {
+  color:black;
+}
