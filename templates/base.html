@@ -17,6 +17,7 @@
 		<script src="/static/js/sdc_math.js"></script>
 		<script src="/static/js/knockout.js"></script>
 		<script src="/static/js/common.js"></script>
+
 		<title>{% block title %}Skydiving Companion{% endblock %}</title>
 
 	    <title>Foundation | Welcome</title>
@@ -34,7 +35,7 @@
 		      <h1><a href="/dashboard">Dashboard</a></h1>
 		    </li>
 		     <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-	         <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+	         <li class="toggle-topbar menu-icon"><a id="main-menu" href="#main-sidr"><span></span></a></li>
 
 		  </ul>
 
@@ -52,8 +53,40 @@
 		      <li><a href="/dashboard/apiqr	">API</a></li>
 		    </ul>
 		  </section>
-	</nav>
+		</nav>
+	<div id="main-sidr">
+      <ul>
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/dashboard/logbook">Logbook</a></li>
+          <li><a href="/dashboard/apiqr">API</a></li>
+          <li><a href="/account">Account</a></li>
+      </ul>
+
+	</div>
 	<br />
+	<script type="text/javascript" src="/static/sidr/jquery.sidr.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.touchSwipe.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+		   $('#main-menu').sidr({
+		   	name: 'main-sidr',
+		   	side:'left'
+		   });
+
+			 $(window).swipe( {
+        		//Generic swipe handler for all directions
+		        swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
+		          if (direction == "right") {
+			          $.sidr('open', 'main-sidr');
+
+		          } else if (direction == "left") {
+			          $.sidr('close', 'main-sidr');
+
+		          } 
+		        }
+	      	});
+		});
+	</script> 
     {% block content %}{% endblock %}
     </body>
 </html>
