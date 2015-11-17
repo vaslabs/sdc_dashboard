@@ -126,7 +126,6 @@ $(document).ready(function() {
             swipe:function(event, direction, distance, duration, fingerCount, fingerData) {
               if (direction == "right") {
                 $.sidr('close', 'session-menu');
-
               }
             }
           });
