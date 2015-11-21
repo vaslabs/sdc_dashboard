@@ -73,10 +73,10 @@
 		   	side:'left'
 		   });
 
-			$(window).swipe( { swipeLeft:menuSwipe, allowPageScroll:"vertical"} );
-			$(window).swipe( { swipeRight:menuSwipe, allowPageScroll:"vertical"} );
+			$('body').swipe( { swipeLeft:menuSwipe, allowPageScroll:"vertical", excludedElements:$.fn.swipe.defaults.excludedElements+", #map-canvas"} );
+			$('body').swipe( { swipeRight:menuSwipe, allowPageScroll:"vertical"} );
 
-			$(window).swipe( { swipeStatus:menuSwipe, allowPageScroll:"vertical" } );
+			$('body').swipe( { swipeStatus:menuSwipe, allowPageScroll:"vertical" } );
 
     		//Generic swipe handler for all directions
 	        function menuSwipe(event, direction, distance, duration, fingerCount, fingerData) {
