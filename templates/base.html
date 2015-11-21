@@ -80,13 +80,13 @@
 
     		//Generic swipe handler for all directions
 	        function menuSwipe(event, direction, distance, duration, fingerCount, fingerData) {
-	          if (direction == "right") {
+	          if (direction == "right" && window.screen.width < 500) {
 		          $.sidr('open', 'main-sidr');
 
 	          } else if (direction == "left") {
 		          $.sidr('close', 'main-sidr');
 
-	          } 
+	          }
 	        }
 	      	
 		});
