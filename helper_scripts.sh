@@ -7,3 +7,6 @@ start_server() {
 pyshell() {
 	python manage.py shell
 }
+create_app() {
+	python manage.py startapp $1
+}
