@@ -14,6 +14,9 @@ def create_account(request):
 	encrypted_token = encrypt(account, token)
 	response = {}
 	response['apitoken'] = encrypted_token
-	
+	body = json.dumps(response)
+	return HttpResponse(body, content_type="application/json")
+
+
 
 
