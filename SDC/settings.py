@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'sdc_dashboard',
     'sdc_invites',
+    'sdc_temporary_account_manager',
 
 )
 
@@ -99,7 +100,7 @@ WSGI_APPLICATION = 'SDC.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+        'default': {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'sdc-dashboard-db',
         'USER': 'skydiverninja',
