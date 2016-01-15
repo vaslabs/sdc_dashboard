@@ -8,3 +8,7 @@ def get_skydiver_from_token(request):
 	skydiver = SkyDiver.objects.get(username=current_user.username)
 
 	return {'user':current_user, 'skydiver':skydiver}
+
+def getSessionList(skydiver):
+	sessionDataList = SessionData.objects.filter(skyDiver=skydiver)
+	return sessionDataList

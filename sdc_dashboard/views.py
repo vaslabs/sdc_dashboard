@@ -128,7 +128,7 @@ def save_session_data(request, format=None):
 	data_file.write(json.dumps(received_json_data))
 	data_file.close()
 	skydiver = user_details['skydiver']
-	sessionData = SessionData(skyDiver=skydiver, submittedDate=date_submitted, location = file_name)
+	sessionData = SessionData(skyDiver=skydiver, location = file_name)
 	sessionData.save()
 	return HttpResponse(json.dumps({'message':'OK', 'code': 200}), content_type="application/json")
  

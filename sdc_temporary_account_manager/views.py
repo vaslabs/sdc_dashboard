@@ -7,6 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from .temp_account_utils import create_temporary_account, encrypt, getAccount, saveData, getSessions, getSession
 from rest_framework.decorators import api_view
 from django.core.serializers.json import DjangoJSONEncoder
+from sdc_dashboard.api_utils import get_skydiver_from_token
+from sdc_dashboard import api_utils
+from sdc_dashboard.views import save_session_data
 
 def ok_message():
 	return HttpResponse("{'message':'OK', 'code': 200}", content_type="application/json")
@@ -30,18 +33,14 @@ def create_account(request):
 
 @csrf_exempt
 def save_session(request):
-	if ('HTTP_AUTHORIZATION' not in request.META):
-		return 
 	try:
-		apitoken = 	request.META['HTTP_AUTHORIZATION'].split(' ')[1]
+		user, isReal = getUser(request)
+		if isReal:
+			save_session_data(request)
+			return
+		temporaryUser = user
 	except:
 		return authentication_error()
-
-	try:
-		temporaryUser = getAccount(apitoken)
-	except:
-		print "Authentication error: " + apitoken
-		return authentication_error
 	if (temporaryUser != None):
 		saveData(temporaryUser, request.body)
 		return ok_message()
@@ -50,8 +49,14 @@ def save_session(request):
 
 def getUser(request):
 	apitoken = 	request.META['HTTP_AUTHORIZATION'].split(' ')[1]
+	try:
+		realUserData = get_skydiver_from_token(request)
+		if (realUserData['skydiver'] != None):
+			return realUserData['skydiver'], True
+	except:
+		pass
 	temporaryUser = getAccount(apitoken)
-	return temporaryUser
+	return temporaryUser, False
 
 def sessionListToJsonResponse(sessions):
 	data = []
@@ -68,7 +73,10 @@ def sessionListToJsonResponse(sessions):
 @csrf_exempt
 def get_sessions(request):
 	try:
-		user = getUser(request)
+		user, isReal = getUser(request)
+		if isReal:
+			sessions = api_utils.get_sessions(user)
+			return sessionListToJsonResponse(sessions)
 	except:
 		return authentication_error()
 
@@ -79,7 +87,7 @@ def get_sessions(request):
 @csrf_exempt
 def get_session(request, sessionId):
 	try:
-		user = getUser(request)
+		user, isReal = getUser(request)
 	except:
 		return authentication_error()
 	session = getSession(user, sessionId)
