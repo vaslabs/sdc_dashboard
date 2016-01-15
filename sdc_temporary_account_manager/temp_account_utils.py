@@ -69,13 +69,16 @@ def saveData(account, data):
 	
 	sessionData = TemporarySessionData(temporarySkydiver=account, location = file_name)
 	sessionData.save()
+	account.sessionsSubmitted += 1
+	account.save()
 
 def getSessions(account):
 	return TemporarySessionData.objects.filter(temporarySkydiver=account)
 
-def getData(account, session):
-	session=TemporarySessionData.objects.get(id=session.id, temporarySkydiver=account)
+def getSession(account, sessionId):
+	session=TemporarySessionData.objects.get(id=sessionId, temporarySkydiver=account)
 	return logbookRawData(session)
+
 
 class LimitPassedError(Exception):
 
