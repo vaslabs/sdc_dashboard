@@ -3,7 +3,7 @@ from .models import TemporarySkydiver, TemporaryToken, TemporarySessionData
 import md5
 from Crypto.PublicKey import RSA
 from Crypto.Util import asn1
-from base64 import b64decode, b64encode
+from base64 import b64decode, b64encode, urlsafe_b64decode
 import random
 import datetime
 from SDC import settings
@@ -13,29 +13,42 @@ from sdc_dashboard.sdc_utils import logbookRawData
 SESSION_LIMIT = 5
 
 def create_temporary_account(publicKey):
+	temporarySkydiver = TemporarySkydiver.objects.filter(publicKey=publicKey)
+	if (len(temporarySkydiver) > 0):
+		temporarySkydiver = temporarySkydiver[0]
+		temporaryApiToken = TemporaryToken.objects.filter(skydiver=temporarySkydiver)
+		if (len(temporaryApiToken) == 0):
+			temporaryApiToken = createToken(publicKey, temporarySkydiver)
+		else:
+			temporaryApiToken = temporaryApiToken[0]
+		return temporarySkydiver, temporaryApiToken
 	temporarySkydiver = TemporarySkydiver(publicKey=publicKey)
 	temporarySkydiver.save()
-	m = md5.new()
-	m.update(publicKey)
-	m.update(str(temporarySkydiver.createdDate))
-	apiToken = m.hexdigest()
+	
+	apiToken = createToken(publicKey, temporarySkydiver)
 	temporaryApiToken = TemporaryToken(token=apiToken, skydiver=temporarySkydiver)
 	temporaryApiToken.save()
 	return temporarySkydiver, temporaryApiToken
 
+def createToken(publicKey, temporarySkydiver):
+	m = md5.new()
+	m.update(publicKey)
+	m.update(str(temporarySkydiver.createdDate))
+	return m.hexdigest()
+
 def encrypt(account, data):
 	key = account.publicKey
 	publicKeyObj = generatePublicKey(key)
-	encrypted_data = publicKeyObj.encrypt(data, 123)
+	print 'Data:', data
+	encrypted_data = publicKeyObj.encrypt(str(data), 123)
 	return b64encode(encrypted_data[0])
 
 
 def generatePublicKey(key64):
-	keyDER = b64decode(key64)
-	seq = asn1.DerSequence()
-	seq.decode(keyDER)
-	keyPub = RSA.construct( (seq[0], seq[1]) )
-	return keyPub
+	key='-----BEGIN PUBLIC KEY-----\n'+\
+		key64 +\
+		'\n-----BEGIN PUBLIC KEY-----'
+	return RSA.importKey(key)
 
 def getAccount(apitoken):
 	tokenObject = TemporaryToken.objects.get(token=apitoken)
