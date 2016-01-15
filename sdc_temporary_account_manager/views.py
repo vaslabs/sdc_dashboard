@@ -4,8 +4,9 @@ from django.shortcuts import render
 import json, string, random
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from .temp_account_utils import create_temporary_account, encrypt, getAccount, saveData
+from .temp_account_utils import create_temporary_account, encrypt, getAccount, saveData, getSessions, getSession
 from rest_framework.decorators import api_view
+from django.core.serializers.json import DjangoJSONEncoder
 
 def ok_message():
 	return HttpResponse("{'message':'OK', 'code': 200}", content_type="application/json")
@@ -47,3 +48,40 @@ def save_session(request):
 	else:
 		return authentication_error()
 
+def getUser(request):
+	apitoken = 	request.META['HTTP_AUTHORIZATION'].split(' ')[1]
+	temporaryUser = getAccount(apitoken)
+	return temporaryUser
+
+def sessionListToJsonResponse(sessions):
+	data = []
+	for session in sessions:
+		jsession = {}
+		jsession['id'] = session.id
+		jsession['submittedDate'] = session.submittedDate
+		data.append(jsession)
+	jsonResponse = json.dumps(data, cls=DjangoJSONEncoder)
+	return HttpResponse(jsonResponse, content_type="application/json")
+
+
+
+@csrf_exempt
+def get_sessions(request):
+	try:
+		user = getUser(request)
+	except:
+		return authentication_error()
+
+	sessions = getSessions(user)
+
+	return sessionListToJsonResponse(sessions)
+
+@csrf_exempt
+def get_session(request, sessionId):
+	try:
+		user = getUser(request)
+	except:
+		return authentication_error()
+	session = getSession(user, sessionId)
+
+	return HttpResponse(session, content_type="application/json")
