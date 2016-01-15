@@ -21,7 +21,6 @@ from email_manager.views import activate_account
 from django.conf.urls.static import static
 from django.conf import settings
 
-
 urlpatterns = [
     url(r'^dashboard/', include('sdc_dashboard.urls')),
     url(r'^logbook/', include('sdc_dashboard.logbook_urls')),
@@ -35,6 +34,7 @@ urlpatterns = [
     url(r'^logout/$', 'django.contrib.auth.views.logout', name='logout', kwargs={'template_name': 'registration/logout.html'}),
     url('^', include('django.contrib.auth.urls')),
     url(r'^activate/(?P<token>\w{32})', activate_account, name='activate_account'),
+    url(r'^android/', include('sdc_temporary_account_manager.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
