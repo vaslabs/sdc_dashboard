@@ -8,3 +8,4 @@
 sdc_dashboard/migrations/
 wsgi/*/
 wsgi/*.*
+*/migrations/
