@@ -10,6 +10,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from sdc_dashboard.api_utils import from_token, getSessionList
 from sdc_dashboard import api_utils
 from sdc_dashboard.views import save_session_data
+from sdc_dashboard.sdc_utils import logbookRawData
+
 
 def ok_message():
 	return HttpResponse("{'message':'OK', 'code': 200}", content_type="application/json")
@@ -68,19 +70,23 @@ def sessionListToJsonResponse(sessions):
 	return HttpResponse(jsonResponse, content_type="application/json")
 
 
-
-@csrf_exempt
-def get_sessions(request):
+def get_session_list(request):
 	try:
 		user, isReal = getUser(request)
 		if isReal:
 			sessions = getSessionList(user)
-			return sessionListToJsonResponse(sessions)
+			return sessions
 	except Exception as e:
 		print e
 		return authentication_error()
 
 	sessions = getSessions(user)
+	return sessions
+
+
+@csrf_exempt
+def get_sessions(request):
+	sessions = get_session_list(request)
 
 	return sessionListToJsonResponse(sessions)
 
@@ -93,3 +99,15 @@ def get_session(request, sessionId):
 	session = getSession(user, sessionId)
 
 	return HttpResponse(session, content_type="application/json")
+
+@csrf_exempt
+def get_all_data(request):
+	session_entries = get_session_list(request)
+	data = []
+
+	for session_entry in session_entries:
+		data.append(logbookRawData(session_entry))
+
+	jsonResponse = json.dumps(data)
+	return HttpResponse(jsonResponse, content_type="application/json")
+
