@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .temp_account_utils import create_temporary_account, encrypt, getAccount, saveData, getSessions, getSession
 from rest_framework.decorators import api_view
 from django.core.serializers.json import DjangoJSONEncoder
-from sdc_dashboard.api_utils import get_skydiver_from_token
+from sdc_dashboard.api_utils import from_token, getSessionList
 from sdc_dashboard import api_utils
 from sdc_dashboard.views import save_session_data
 
@@ -15,7 +15,7 @@ def ok_message():
 	return HttpResponse("{'message':'OK', 'code': 200}", content_type="application/json")
 
 def authentication_error():
-	return HttpResponse("{'message':'ERROR', 'code': 401", content_type="application/json")
+	return HttpResponse("{'message':'ERROR', 'code': 401}", content_type="application/json")
 
 @csrf_exempt
 @api_view(['POST'])
@@ -50,11 +50,11 @@ def save_session(request):
 def getUser(request):
 	apitoken = 	request.META['HTTP_AUTHORIZATION'].split(' ')[1]
 	try:
-		realUserData = get_skydiver_from_token(request)
+		realUserData = from_token(apitoken)
 		if (realUserData['skydiver'] != None):
 			return realUserData['skydiver'], True
-	except:
-		pass
+	except Exception as e:
+		print e
 	temporaryUser = getAccount(apitoken)
 	return temporaryUser, False
 
@@ -75,9 +75,10 @@ def get_sessions(request):
 	try:
 		user, isReal = getUser(request)
 		if isReal:
-			sessions = api_utils.get_sessions(user)
+			sessions = getSessionList(user)
 			return sessionListToJsonResponse(sessions)
-	except:
+	except Exception as e:
+		print e
 		return authentication_error()
 
 	sessions = getSessions(user)
