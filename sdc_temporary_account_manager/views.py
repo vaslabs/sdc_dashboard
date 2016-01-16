@@ -36,8 +36,7 @@ def save_session(request):
 	try:
 		user, isReal = getUser(request)
 		if isReal:
-			save_session_data(request)
-			return
+			return save_session_data(request)
 		temporaryUser = user
 	except:
 		return authentication_error()
