@@ -64,7 +64,7 @@ def saveData(account, data):
 	date_submitted = datetime.datetime.now()
 	file_name = str(random.randint(0, 1000000)) + str(date_submitted.time()) + '.json'
 	data_file = open(settings.DATA_DIR + "/" + file_name, 'w')
-	data_file.write(json.dumps(data))
+	data_file.write(data)
 	data_file.close()
 	
 	sessionData = TemporarySessionData(temporarySkydiver=account, location = file_name)
