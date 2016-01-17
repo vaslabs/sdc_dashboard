@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 from django.core.serializers.json import DjangoJSONEncoder
 from sdc_dashboard.api_utils import from_token, getSessionList
 from sdc_dashboard import api_utils
-from sdc_dashboard.views import save_session_data
+from sdc_dashboard.views import save_session_data, get_user_data
 from sdc_dashboard.sdc_utils import logbookRawData
 
 
@@ -94,6 +94,8 @@ def get_sessions(request):
 def get_session(request, sessionId):
 	try:
 		user, isReal = getUser(request)
+		if isReal:
+			return get_user_data(request, sessionId)
 	except:
 		return authentication_error()
 	session = getSession(user, sessionId)
